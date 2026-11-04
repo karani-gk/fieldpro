@@ -1,0 +1,26 @@
+# fieldpro-frappe
+
+> Open-source field service management app for Frappe and ERPNext v16 (Python 3.14, MIT
+> license). It takes a service job from booking to invoice: service jobs, technician visits,
+> parts from the technician's van warehouse, photos, customer signatures, a Frappe Workflow for
+> approvals, offline sync, realtime updates, signed webhooks and automatic draft Sales Invoices.
+> It is the backend for fieldpro-nextjs (technician app and customer portal) and ERPNext Desk,
+> and the code built in UPEO Academy's course "ERPNext as a Platform".
+
+Install with `bench get-app https://github.com/karani-gk/fieldpro-frappe`, then
+`bench --site <site> install-app fieldpro`. The Frappe app is named `fieldpro`. Business rules live
+in `fieldpro/services/`; API endpoints in `fieldpro/api/v1/` stay thin.
+
+## Docs
+
+- [README](README.md): features, quick start, demo sign-ins, project structure, course map
+- [API contract](docs/API.md): endpoints, error format, response shapes, pagination, webhooks
+- [Authentication](docs/AUTH.md): technician one-time code (email or SMS) and token, portal
+  session with CSRF, partner OAuth2
+
+## Related
+
+- [fieldpro-nextjs](https://github.com/karani-gk/fieldpro-nextjs): Next.js technician app and
+  customer portal for this backend
+- [ERPNext as a Platform course](https://www.upeo.academy/courses/erpnext-as-platform-course):
+  26 video lessons from UPEO Academy that build this app
