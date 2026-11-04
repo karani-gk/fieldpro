@@ -24,3 +24,6 @@ endpoints stay thin, rules live in `fieldpro/services/`, and comments explain wh
 - Print formats have no `frappe.defaults` in Jinja; add a helper in `jinja.py`.
 - A new Service Job carries DocType defaults (payment_status "Unpaid"); the booking guard compares
   with the default, not with empty.
+- A JSON request body becomes the whole `form_dict`: Frappe drops the query string, so `?source=`
+  never reaches a whitelisted method's arguments. Read URL parameters from `frappe.request.args`,
+  and test webhook endpoints through `make_form_dict`, not by calling the service directly.
