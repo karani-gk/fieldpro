@@ -1,0 +1,18 @@
+meta {
+  name: Someone else's job (404)
+  type: http
+  seq: 7
+}
+
+get {
+  url: {{baseUrl}}/api/method/fieldpro.api.v1.jobs.get_job?job=JOB-2026-00010
+  auth: none
+}
+
+headers {
+  Authorization: token {{token}}
+}
+
+docs {
+  JOB-2026-00010 is Otieno's. Achieng's token gets 404 not_found, not 403: we do not confirm it exists.
+}

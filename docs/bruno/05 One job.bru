@@ -1,0 +1,14 @@
+meta {
+  name: One job
+  type: http
+  seq: 5
+}
+
+get {
+  url: {{baseUrl}}/api/method/fieldpro.api.v1.jobs.get_job?job={{job}}
+  auth: none
+}
+
+headers {
+  Authorization: token {{token}}
+}

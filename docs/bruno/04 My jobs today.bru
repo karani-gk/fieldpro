@@ -1,0 +1,14 @@
+meta {
+  name: My jobs today
+  type: http
+  seq: 4
+}
+
+get {
+  url: {{baseUrl}}/api/method/fieldpro.api.v1.jobs.list_jobs?scope=today
+  auth: none
+}
+
+headers {
+  Authorization: token {{token}}
+}

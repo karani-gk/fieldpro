@@ -71,7 +71,7 @@ class DemoData:
 			self.jobs()
 			frappe.db.commit()
 		frappe.set_user("Administrator")
-		print(__doc__.split("Sign in", 1)[1].join(["Sign in", ""]))
+		print("Sign in" + __doc__.split("Sign in", 1)[1])
 
 	# ---------------------------------------------------------------- ERPNext basics
 

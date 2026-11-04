@@ -1,0 +1,23 @@
+meta {
+  name: Start visit
+  type: http
+  seq: 6
+}
+
+post {
+  url: {{baseUrl}}/api/method/fieldpro.api.v1.visits.start_visit
+  body: json
+  auth: none
+}
+
+headers {
+  Authorization: token {{token}}
+}
+
+body:json {
+  { "job": "{{job}}", "client_id": "bruno-visit-1" }
+}
+
+docs {
+  Send it twice: the same client_id returns the same visit instead of a second one.
+}

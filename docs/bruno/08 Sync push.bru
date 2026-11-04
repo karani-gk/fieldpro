@@ -1,0 +1,29 @@
+meta {
+  name: Sync push (offline work)
+  type: http
+  seq: 8
+}
+
+post {
+  url: {{baseUrl}}/api/method/fieldpro.api.v1.sync.push
+  body: json
+  auth: none
+}
+
+headers {
+  Authorization: token {{token}}
+}
+
+body:json {
+  {
+    "operations": [
+      { "client_id": "bruno-v2", "op": "start_visit", "job": "{{job}}", "at": "2026-11-04T06:00:00Z" },
+      { "client_id": "bruno-p2", "op": "add_part", "job": "{{job}}", "visit_client_id": "bruno-v2", "item_code": "CAP-35UF", "qty": 1 },
+      { "client_id": "bruno-e2", "op": "end_visit", "job": "{{job}}", "visit_client_id": "bruno-v2", "at": "2026-11-04T07:00:00Z" }
+    ]
+  }
+}
+
+docs {
+  Send it twice: the second answer is "duplicate" for each operation and nothing is added.
+}

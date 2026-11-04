@@ -1,0 +1,19 @@
+meta {
+  name: Request code
+  type: http
+  seq: 2
+}
+
+post {
+  url: {{baseUrl}}/api/method/fieldpro.api.v1.auth.request_otp
+  body: json
+  auth: none
+}
+
+body:json {
+  { "mobile_no": "{{mobile}}" }
+}
+
+docs {
+  Read the code in Desk > SMS Log, put it in the environment's `code`.
+}
