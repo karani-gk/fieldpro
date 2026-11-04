@@ -81,3 +81,14 @@ class TestJobWorkflow(FieldproTestCase):
 
 		self.assertEqual(actions(self.tech_a_user), [SIGN_OFF])
 		self.assertEqual(sorted(actions(self.cust_x_user)), [ACCEPT, REJECT])
+
+
+class TestAssignment(FieldproTestCase):
+	def test_assigning_without_a_date_schedules_the_job_for_today(self):
+		job = factories.job(self.cust_x)
+		frappe.db.set_value("Service Job", job, "scheduled_date", None)
+		doc = frappe.get_doc("Service Job", job)
+		doc.technician = self.tech_a
+		doc.save()
+		factories.as_user("Administrator", lambda: JobFlow().apply(job, "Assign"))
+		self.assertEqual(str(frappe.db.get_value("Service Job", job, "scheduled_date")), frappe.utils.today())

@@ -11,7 +11,7 @@ Two kinds of rule:
 
 import frappe
 from frappe import _
-from frappe.utils import flt
+from frappe.utils import flt, today
 
 from fieldpro.access import AccessProfile
 from fieldpro.settings import AppSettings
@@ -129,6 +129,9 @@ class JobRules:
 	def _entering_assigned(self) -> None:
 		if not self.doc.technician:
 			frappe.throw(_("Choose a technician before assigning the job."))
+		# An assignment with no date means "as soon as possible". Every assigned job has a date,
+		# so the technician's list (sorted and paged by date) never meets an empty one.
+		self.doc.scheduled_date = self.doc.scheduled_date or today()
 
 	def _entering_pending_approval(self) -> None:
 		self._require_finished_work()
