@@ -2,7 +2,7 @@
 
 | Client | Method | On every request |
 |---|---|---|
-| Technician app (mobile pattern; same for Flutter or React Native) | phone code, then a token | `Authorization: token <api_key>:<api_secret>` |
+| Technician app (mobile pattern; same for Flutter or React Native) | password or one-time code, then a token | `Authorization: token <api_key>:<api_secret>` |
 | Customer portal (browser) | email and password, session cookie | the cookie (automatic) + `X-Frappe-CSRF-Token` on POST |
 | Partner system | OAuth2 (Frappe is the provider) | `Authorization: Bearer <access_token>` |
 | Scripts and integrations you control | a user's API key | `Authorization: token <key>:<secret>` |
@@ -19,7 +19,7 @@ which to show. API tokens issued earlier keep working: the gate is at sign-in on
 The code is signed by UPEO Academy (Ed25519) and checked here against the public key in
 `services/activation.py`, with no network call.
 
-## Technician: code by email or SMS, then a token
+## Technician: password or a code by email or SMS, then a token
 
 1. `POST auth.request_otp {"mobile_no": "+254700100001"}`. **Fieldpro Settings > Send Sign-in
    Codes By** decides where the code goes:
@@ -31,6 +31,11 @@ The code is signed by UPEO Academy (Ed25519) and checked here against the public
    is saved as an **SMS Log** in Desk either way.
 2. `POST auth.verify_otp {"mobile_no": "...", "code": "123456"}` returns `token`.
 3. Send `Authorization: token <token>` on every call. No cookies, no CSRF.
+
+Or with a password: `POST auth.sign_in_with_password {"login": "achieng@fieldpro.test", "password": "..."}`
+returns the same token. `login` is the technician's email or mobile number. Frappe checks the
+password and locks the account after the failed attempts System Settings allows, as Desk does. A
+wrong email and a wrong password get the same `wrong_password` answer.
 
 Codes expire in 5 minutes, allow 5 guesses, and 3 codes per number per 10 minutes. Signing in on a
 new phone issues a new secret, which signs the old phone out. `auth.sign_out_device` does the same.

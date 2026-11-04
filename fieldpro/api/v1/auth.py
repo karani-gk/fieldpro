@@ -1,7 +1,8 @@
 """Signing in, per kind of client.
 
-- Technician app (the mobile pattern): request_otp, then verify_otp returns a token. Every call
-  after that sends `Authorization: token <key>:<secret>`. No cookie, no CSRF.
+- Technician app (the mobile pattern): request_otp then verify_otp, or sign_in_with_password,
+  returns a token. Every call after that sends `Authorization: token <key>:<secret>`. No cookie,
+  no CSRF.
 - Customer portal (the browser pattern): Frappe's own /api/method/login sets a session cookie.
   session() then returns the CSRF token the browser sends as X-Frappe-CSRF-Token on every POST.
 - Partner systems: OAuth2 (Frappe is the provider; see docs/AUTH.md) and send `Bearer <token>`.
@@ -16,6 +17,7 @@ from fieldpro.api.endpoint import api, ok
 from fieldpro.api.errors import Unauthorized
 from fieldpro.services.activation import Activation
 from fieldpro.services.otp import OtpService, TokenIssuer
+from fieldpro.services.password_sign_in import PasswordSignIn
 
 
 @api(methods=["POST"], allow_guest=True)
@@ -31,6 +33,14 @@ def request_otp(mobile_no: str):
 def verify_otp(mobile_no: str, code: str):
 	Activation().require()
 	return ok(OtpService().verify(mobile_no, code))
+
+
+@api(methods=["POST"], allow_guest=True)
+@rate_limit(limit=20, seconds=600)
+def sign_in_with_password(login: str, password: str):
+	"""Technician app, the other way in: email or mobile number and password, the same token."""
+	Activation().require()
+	return ok(PasswordSignIn().sign_in(login, password))
 
 
 @api(methods=["GET"])

@@ -41,8 +41,8 @@ It is also the code you build, lesson by lesson, in UPEO Academy's course
 - **Row-level security:** a technician sees only their jobs, a customer only their company's.
 - **Versioned REST API (`/api/v1`):** one error format, typed response shapes and cursor
   pagination. See the [API contract](docs/API.md).
-- **Three ways to sign in:** technicians get a one-time code by email or SMS and receive an API
-  token; customers use a session cookie with CSRF; partner systems use OAuth2. See
+- **Three ways to sign in:** technicians use a password or a one-time code by email or SMS, and
+  receive an API token; customers use a session cookie with CSRF; partner systems use OAuth2. See
   [AUTH.md](docs/AUTH.md).
 - **Offline sync:** the technician app queues work with no signal, and the server applies each
   batch once, however often it is sent.
@@ -99,7 +99,7 @@ next to it.
 
 | Who | Where | Sign in |
 |---|---|---|
-| Technician (Achieng, Otieno, Wanjiru) | technician app `/tech` | `+254700100001`, `…002`, `…003`, then the one-time code |
+| Technician (Achieng, Otieno, Wanjiru) | technician app `/tech` | `achieng@fieldpro.test` or `0700 100001` (`…002`, `…003`) with the password, or a one-time code |
 | Customer (Wanjiku Clinic and two more) | customer portal `/portal` | `clinic@fieldpro.test`, `apartments@fieldpro.test`, `supermarket@fieldpro.test` |
 | Manager | Desk `/app/service-job` | `manager@fieldpro.test` |
 
