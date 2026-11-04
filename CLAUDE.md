@@ -27,3 +27,6 @@ endpoints stay thin, rules live in `fieldpro/services/`, and comments explain wh
 - A JSON request body becomes the whole `form_dict`: Frappe drops the query string, so `?source=`
   never reaches a whitelisted method's arguments. Read URL parameters from `frappe.request.args`,
   and test webhook endpoints through `make_form_dict`, not by calling the service directly.
+- `frappe.sendmail` raises OutgoingEmailError when no outgoing Email Account exists (it only queues
+  with one, a site_config account, or `mute_emails`). Check `EmailAccount.find_outgoing()` first,
+  as `otp.default_email_sender` does; that lookup is cached on `frappe.local` per request.

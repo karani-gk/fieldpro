@@ -7,6 +7,8 @@ import frappe
 from frappe.utils import flt
 
 DEFAULT_APPROVAL_THRESHOLD = 20000
+# Email, not SMS: learners take this course from many countries, and every one of them has email.
+DEFAULT_SIGN_IN_CODE_CHANNEL = "Email"
 
 
 class AppSettings:
@@ -62,6 +64,11 @@ class AppSettings:
 	@property
 	def inbound_webhook_secret(self) -> str | None:
 		return self._password("inbound_webhook_secret")
+
+	@property
+	def sign_in_code_channel(self) -> str:
+		"""Email or SMS. A site migrated from before this setting has it blank, so Email."""
+		return self.doc.get("sign_in_code_channel") or DEFAULT_SIGN_IN_CODE_CHANNEL
 
 	def _password(self, fieldname: str) -> str | None:
 		return self.doc.get_password(fieldname, raise_exception=False) or None

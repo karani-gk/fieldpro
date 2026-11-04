@@ -18,7 +18,9 @@
   "partner_webhook_url",
   "partner_webhook_secret",
   "column_break_webhooks",
-  "inbound_webhook_secret"
+  "inbound_webhook_secret",
+  "section_sign_in",
+  "sign_in_code_channel"
  ],
  "fields": [
   {
@@ -101,13 +103,26 @@
    "fieldtype": "Password",
    "label": "Inbound Callback Secret",
    "description": "SMS and payment providers sign their callbacks with this."
+  },
+  {
+   "fieldname": "section_sign_in",
+   "fieldtype": "Section Break",
+   "label": "Technician Sign-in"
+  },
+  {
+   "fieldname": "sign_in_code_channel",
+   "fieldtype": "Select",
+   "label": "Send Sign-in Codes By",
+   "options": "Email\nSMS",
+   "default": "Email",
+   "description": "Email reaches technicians in any country with no gateway to pay for. SMS uses the gateway in SMS Settings."
   }
  ],
  "index_web_pages_for_search": 0,
  "istable": 0,
  "issingle": 1,
  "links": [],
- "modified": "2026-11-04 10:00:00.000000",
+ "modified": "2026-11-04 15:00:00.000000",
  "modified_by": "Administrator",
  "module": "Fieldpro",
  "name": "Fieldpro Settings",

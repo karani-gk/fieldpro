@@ -7,10 +7,16 @@
 | Partner system | OAuth2 (Frappe is the provider) | `Authorization: Bearer <access_token>` |
 | Scripts and integrations you control | a user's API key | `Authorization: token <key>:<secret>` |
 
-## Technician: code by SMS, then a token
+## Technician: code by email or SMS, then a token
 
-1. `POST auth.request_otp {"mobile_no": "+254700100001"}`. The code is sent by the gateway in SMS
-   Settings; with none configured (local development) it is saved as an **SMS Log** in Desk.
+1. `POST auth.request_otp {"mobile_no": "+254700100001"}`. **Fieldpro Settings > Send Sign-in
+   Codes By** decides where the code goes:
+   - **Email** (the default): to the email of the technician's user, through the outgoing Email
+     Account. It works in every country with no SMS gateway to pay for.
+   - **SMS**: through the gateway in SMS Settings.
+
+   With no Email Account or SMS gateway configured (local development) nothing is sent: the code
+   is saved as an **SMS Log** in Desk either way.
 2. `POST auth.verify_otp {"mobile_no": "...", "code": "123456"}` returns `token`.
 3. Send `Authorization: token <token>` on every call. No cookies, no CSRF.
 

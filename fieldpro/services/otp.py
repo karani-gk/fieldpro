@@ -1,4 +1,7 @@
-"""Phone sign-in for technicians: a six-digit code by SMS, exchanged for an API token.
+"""Phone sign-in for technicians: a six-digit code by email or SMS, exchanged for an API token.
+
+The technician types their mobile number either way; Fieldpro Settings decides where the code
+goes. Email is the default because it reaches every country with no gateway to pay for.
 
 The mobile pattern: the app never holds a password. It proves the phone number once and gets the
 technician's own key and secret, which it sends on every request as
@@ -19,6 +22,7 @@ import frappe
 from frappe import _
 
 from fieldpro.api.errors import RateLimited, Unauthorized
+from fieldpro.settings import AppSettings
 from fieldpro.utils import normalise_mobile
 
 CODE_TTL = 300
@@ -63,21 +67,102 @@ def default_gateway() -> SmsGateway:
 	return LogSmsGateway()
 
 
+class EmailSender(Protocol):
+	def send(self, email: str, message: str) -> None: ...
+
+
+class EmailCodeSender:
+	"""Frappe's email queue, sent through the outgoing Email Account."""
+
+	def send(self, email: str, message: str) -> None:
+		frappe.sendmail(
+			recipients=[email],
+			subject=_("Your fieldpro sign-in code"),
+			message=message,
+			# A sign-in code is not a newsletter: no unsubscribe link to switch it off.
+			add_unsubscribe_link=0,
+		)
+
+
+class UnsentEmailLog:
+	"""Development, with no outgoing Email Account: Frappe refuses to queue the email, so nothing
+	is sent. The code is saved in SMS Log, where the course has always shown it, with the address
+	it would have gone to."""
+
+	def send(self, email: str, message: str) -> None:
+		LogSmsGateway().send(email, message)
+
+
+def default_email_sender() -> EmailSender:
+	from frappe.email.doctype.email_account.email_account import EmailAccount
+
+	# find_outgoing() also counts the site_config account and the dummy one used when emails are muted.
+	if EmailAccount.find_outgoing():
+		return EmailCodeSender()
+	return UnsentEmailLog()
+
+
+class CodeDelivery(Protocol):
+	def deliver(self, technician, mobile: str, message: str) -> None: ...
+
+
+class SmsDelivery:
+	def __init__(self, gateway: SmsGateway):
+		self.gateway = gateway
+
+	def deliver(self, technician, mobile: str, message: str) -> None:
+		self.gateway.send(mobile, message)
+
+
+class EmailDelivery:
+	"""To the email of the technician's user, the address they already sign in to Frappe with."""
+
+	def __init__(self, sender: EmailSender | None = None):
+		self.sender = sender or default_email_sender()
+
+	def deliver(self, technician, mobile: str, message: str) -> None:
+		email = frappe.db.get_value("User", technician.user, "email")
+		if not email:
+			# Raising would tell the caller this number is a technician; log it for the manager.
+			frappe.log_error(
+				title="fieldpro: sign-in code not sent",
+				message=f"Technician {technician.name} ({technician.user}) has no email address.",
+			)
+			return
+		self.sender.send(email, message)
+
+
+def default_delivery(settings: AppSettings | None = None) -> CodeDelivery:
+	channels = {"Email": EmailDelivery, "SMS": lambda: SmsDelivery(default_gateway())}
+	return channels[(settings or AppSettings()).sign_in_code_channel]()
+
+
 class OtpService:
-	def __init__(self, sms: SmsGateway | None = None, tokens: "TokenIssuer | None" = None):
-		self.sms = sms or default_gateway()
+	def __init__(
+		self,
+		sms: SmsGateway | None = None,
+		tokens: "TokenIssuer | None" = None,
+		delivery: CodeDelivery | None = None,
+	):
+		# A caller that hands in an SMS gateway means SMS, whatever the setting says.
+		self.delivery = delivery or (SmsDelivery(sms) if sms else default_delivery())
 		self.tokens = tokens or TokenIssuer()
 
 	def request(self, mobile_no: str) -> None:
 		mobile = normalise_mobile(mobile_no)
 		self._count_send(mobile)
-		if not self._technician(mobile):
+		technician = self._technician(mobile)
+		if not technician:
 			return
 		code = f"{secrets.randbelow(10**6):06d}"
 		frappe.cache.set_value(
 			self._key(mobile), {"hash": self._hash(mobile, code), "guesses": 0}, expires_in_sec=CODE_TTL
 		)
-		self.sms.send(mobile, _("Your fieldpro sign-in code is {0}. It expires in 5 minutes.").format(code))
+		self.delivery.deliver(
+			technician,
+			mobile,
+			_("Your fieldpro sign-in code is {0}. It expires in 5 minutes.").format(code),
+		)
 
 	def verify(self, mobile_no: str, code: str) -> dict:
 		mobile = normalise_mobile(mobile_no)
