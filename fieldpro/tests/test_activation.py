@@ -6,6 +6,7 @@ import json
 import frappe
 from cryptography.hazmat.primitives import serialization
 from cryptography.hazmat.primitives.asymmetric.ed25519 import Ed25519PrivateKey
+from frappe.tests import IntegrationTestCase
 
 from fieldpro.activation_hooks import redirect_login_page, refuse_sign_in
 from fieldpro.api.errors import Invalid, NotActivated
@@ -85,12 +86,6 @@ class TestActivation(FieldproTestCase):
 		with self.assertRaises(NotActivated):
 			Activation().require()
 
-	def test_the_technician_sign_in_endpoint_answers_not_activated(self):
-		frappe.local.response = frappe._dict()
-		auth.request_otp("+254700100001")
-		self.assertEqual(frappe.local.response.http_status_code, 403)
-		self.assertEqual(frappe.local.response["error"]["code"], "not_activated")
-
 	def test_the_login_page_sends_people_to_activate_for_now_only(self):
 		previous = getattr(frappe.local, "request", None)
 		frappe.local.request = frappe._dict(path="/login")
@@ -119,3 +114,18 @@ class TestActivation(FieldproTestCase):
 		settings.access_code = settings.activated_for = settings.activated_on = None
 		settings.flags.ignore_permissions = True
 		settings.save()
+
+
+class TestActivationEndpoints(IntegrationTestCase):
+	"""Its own class with no fixtures: an endpoint that answers with an error rolls back the whole
+	transaction (api/endpoint.py), which would take a shared fixture with it."""
+
+	def setUp(self):
+		TestActivation._deactivate()
+		self.addCleanup(TestActivation._deactivate)
+
+	def test_the_technician_sign_in_endpoint_answers_not_activated(self):
+		frappe.local.response = frappe._dict()
+		auth.request_otp("+254700100001")
+		self.assertEqual(frappe.local.response.http_status_code, 403)
+		self.assertEqual(frappe.local.response["error"]["code"], "not_activated")
