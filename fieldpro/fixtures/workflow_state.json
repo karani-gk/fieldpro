@@ -1,0 +1,50 @@
+[
+ {
+  "doctype": "Workflow State",
+  "name": "Booked",
+  "workflow_state_name": "Booked",
+  "style": "Info"
+ },
+ {
+  "doctype": "Workflow State",
+  "name": "Assigned",
+  "workflow_state_name": "Assigned",
+  "style": "Primary"
+ },
+ {
+  "doctype": "Workflow State",
+  "name": "In Progress",
+  "workflow_state_name": "In Progress",
+  "style": "Warning"
+ },
+ {
+  "doctype": "Workflow State",
+  "name": "Pending Approval",
+  "workflow_state_name": "Pending Approval",
+  "style": "Danger"
+ },
+ {
+  "doctype": "Workflow State",
+  "name": "Awaiting Sign-off",
+  "workflow_state_name": "Awaiting Sign-off",
+  "style": "Warning"
+ },
+ {
+  "doctype": "Workflow State",
+  "name": "Done",
+  "workflow_state_name": "Done",
+  "style": "Success"
+ },
+ {
+  "doctype": "Workflow State",
+  "name": "Rework",
+  "workflow_state_name": "Rework",
+  "style": "Danger"
+ },
+ {
+  "doctype": "Workflow State",
+  "name": "Cancelled",
+  "workflow_state_name": "Cancelled",
+  "style": "Inverse"
+ }
+]

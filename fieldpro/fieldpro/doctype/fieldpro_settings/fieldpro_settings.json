@@ -1,0 +1,145 @@
+{
+ "actions": [],
+ "allow_rename": 0,
+ "creation": "2026-11-04 10:00:00.000000",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "section_jobs",
+  "company",
+  "approval_threshold",
+  "column_break_jobs",
+  "labour_item",
+  "labour_rate",
+  "section_push",
+  "push_enabled",
+  "fcm_service_account",
+  "section_webhooks",
+  "partner_webhook_url",
+  "partner_webhook_secret",
+  "column_break_webhooks",
+  "inbound_webhook_secret"
+ ],
+ "fields": [
+  {
+   "fieldname": "section_jobs",
+   "fieldtype": "Section Break",
+   "label": "Jobs and Invoices"
+  },
+  {
+   "fieldname": "company",
+   "fieldtype": "Link",
+   "label": "Company",
+   "options": "Company",
+   "reqd": 1
+  },
+  {
+   "fieldname": "approval_threshold",
+   "fieldtype": "Currency",
+   "label": "Approval Threshold",
+   "default": "20000",
+   "description": "A job estimated above this needs a Field Manager's approval before the customer signs off."
+  },
+  {
+   "fieldname": "column_break_jobs",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "labour_item",
+   "fieldtype": "Link",
+   "label": "Labour Item",
+   "options": "Item",
+   "reqd": 1,
+   "description": "A non-stock item. Each invoice bills the job's hours on this item."
+  },
+  {
+   "fieldname": "labour_rate",
+   "fieldtype": "Currency",
+   "label": "Labour Rate per Hour"
+  },
+  {
+   "fieldname": "section_push",
+   "fieldtype": "Section Break",
+   "label": "Push Notifications"
+  },
+  {
+   "fieldname": "push_enabled",
+   "fieldtype": "Check",
+   "label": "Send Push Notifications",
+   "description": "Off: pushes are written to the fieldpro.push log instead of sent."
+  },
+  {
+   "fieldname": "fcm_service_account",
+   "fieldtype": "Password",
+   "label": "FCM Service Account JSON",
+   "length": 8000,
+   "description": "The Firebase service account key (JSON) used to call FCM HTTP v1."
+  },
+  {
+   "fieldname": "section_webhooks",
+   "fieldtype": "Section Break",
+   "label": "Webhooks"
+  },
+  {
+   "fieldname": "partner_webhook_url",
+   "fieldtype": "Data",
+   "label": "Partner Webhook URL",
+   "options": "URL",
+   "description": "Finished jobs and new invoices are posted here, signed. Blank: nothing is sent."
+  },
+  {
+   "fieldname": "partner_webhook_secret",
+   "fieldtype": "Password",
+   "label": "Partner Webhook Secret"
+  },
+  {
+   "fieldname": "column_break_webhooks",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "inbound_webhook_secret",
+   "fieldtype": "Password",
+   "label": "Inbound Callback Secret",
+   "description": "SMS and payment providers sign their callbacks with this."
+  }
+ ],
+ "index_web_pages_for_search": 0,
+ "istable": 0,
+ "issingle": 1,
+ "links": [],
+ "modified": "2026-11-04 10:00:00.000000",
+ "modified_by": "Administrator",
+ "module": "Fieldpro",
+ "name": "Fieldpro Settings",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "role": "System Manager",
+   "read": 1,
+   "write": 1,
+   "create": 1,
+   "delete": 1,
+   "report": 1,
+   "export": 1,
+   "print": 1,
+   "email": 1,
+   "share": 1
+  },
+  {
+   "role": "Field Manager",
+   "read": 1,
+   "write": 1,
+   "create": 0,
+   "delete": 0,
+   "report": 1,
+   "export": 1,
+   "print": 1,
+   "email": 1,
+   "share": 0
+  }
+ ],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": [],
+ "track_changes": 1
+}

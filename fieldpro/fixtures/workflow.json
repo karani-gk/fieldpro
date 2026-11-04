@@ -1,0 +1,171 @@
+[
+ {
+  "doctype": "Workflow",
+  "name": "Service Job",
+  "workflow_name": "Service Job",
+  "document_type": "Service Job",
+  "is_active": 1,
+  "override_status": 0,
+  "send_email_alert": 0,
+  "workflow_state_field": "workflow_state",
+  "states": [
+   {
+    "doctype": "Workflow Document State",
+    "state": "Booked",
+    "doc_status": "0",
+    "allow_edit": "Field Manager",
+    "is_optional_state": 0
+   },
+   {
+    "doctype": "Workflow Document State",
+    "state": "Assigned",
+    "doc_status": "0",
+    "allow_edit": "Field Manager",
+    "is_optional_state": 0
+   },
+   {
+    "doctype": "Workflow Document State",
+    "state": "In Progress",
+    "doc_status": "0",
+    "allow_edit": "Field Technician",
+    "is_optional_state": 0
+   },
+   {
+    "doctype": "Workflow Document State",
+    "state": "Pending Approval",
+    "doc_status": "0",
+    "allow_edit": "Field Manager",
+    "is_optional_state": 0
+   },
+   {
+    "doctype": "Workflow Document State",
+    "state": "Awaiting Sign-off",
+    "doc_status": "0",
+    "allow_edit": "Field Technician",
+    "is_optional_state": 0
+   },
+   {
+    "doctype": "Workflow Document State",
+    "state": "Done",
+    "doc_status": "0",
+    "allow_edit": "Field Manager",
+    "is_optional_state": 0
+   },
+   {
+    "doctype": "Workflow Document State",
+    "state": "Rework",
+    "doc_status": "0",
+    "allow_edit": "Field Manager",
+    "is_optional_state": 0
+   },
+   {
+    "doctype": "Workflow Document State",
+    "state": "Cancelled",
+    "doc_status": "0",
+    "allow_edit": "Field Manager",
+    "is_optional_state": 0
+   }
+  ],
+  "transitions": [
+   {
+    "doctype": "Workflow Transition",
+    "state": "Booked",
+    "action": "Assign",
+    "next_state": "Assigned",
+    "allowed": "Field Manager",
+    "allow_self_approval": 1,
+    "condition": "doc.technician"
+   },
+   {
+    "doctype": "Workflow Transition",
+    "state": "Booked",
+    "action": "Cancel",
+    "next_state": "Cancelled",
+    "allowed": "Field Manager",
+    "allow_self_approval": 1
+   },
+   {
+    "doctype": "Workflow Transition",
+    "state": "Assigned",
+    "action": "Start",
+    "next_state": "In Progress",
+    "allowed": "Field Technician",
+    "allow_self_approval": 1
+   },
+   {
+    "doctype": "Workflow Transition",
+    "state": "Assigned",
+    "action": "Cancel",
+    "next_state": "Cancelled",
+    "allowed": "Field Manager",
+    "allow_self_approval": 1
+   },
+   {
+    "doctype": "Workflow Transition",
+    "state": "Rework",
+    "action": "Start",
+    "next_state": "In Progress",
+    "allowed": "Field Technician",
+    "allow_self_approval": 1
+   },
+   {
+    "doctype": "Workflow Transition",
+    "state": "In Progress",
+    "action": "Complete",
+    "next_state": "Pending Approval",
+    "allowed": "Field Technician",
+    "allow_self_approval": 1,
+    "condition": "doc.needs_approval"
+   },
+   {
+    "doctype": "Workflow Transition",
+    "state": "In Progress",
+    "action": "Complete",
+    "next_state": "Awaiting Sign-off",
+    "allowed": "Field Technician",
+    "allow_self_approval": 1,
+    "condition": "not doc.needs_approval"
+   },
+   {
+    "doctype": "Workflow Transition",
+    "state": "Pending Approval",
+    "action": "Approve",
+    "next_state": "Awaiting Sign-off",
+    "allowed": "Field Manager",
+    "allow_self_approval": 1
+   },
+   {
+    "doctype": "Workflow Transition",
+    "state": "Pending Approval",
+    "action": "Send Back",
+    "next_state": "In Progress",
+    "allowed": "Field Manager",
+    "allow_self_approval": 1
+   },
+   {
+    "doctype": "Workflow Transition",
+    "state": "Awaiting Sign-off",
+    "action": "Sign Off On Site",
+    "next_state": "Done",
+    "allowed": "Field Technician",
+    "allow_self_approval": 1
+   },
+   {
+    "doctype": "Workflow Transition",
+    "state": "Awaiting Sign-off",
+    "action": "Accept",
+    "next_state": "Done",
+    "allowed": "Customer",
+    "allow_self_approval": 1
+   },
+   {
+    "doctype": "Workflow Transition",
+    "state": "Awaiting Sign-off",
+    "action": "Reject",
+    "next_state": "Rework",
+    "allowed": "Customer",
+    "allow_self_approval": 1
+   }
+  ]
+ }
+]

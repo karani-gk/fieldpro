@@ -1,0 +1,42 @@
+[
+ {
+  "doctype": "Notification",
+  "name": "fieldpro: Job Assigned",
+  "subject": "New job {{ doc.name }}: {{ doc.issue }}",
+  "document_type": "Service Job",
+  "event": "Value Change",
+  "value_changed": "technician",
+  "channel": "System Notification",
+  "enabled": 1,
+  "is_standard": 0,
+  "module": "Fieldpro",
+  "condition": "doc.technician_user",
+  "message": "<p>{{ doc.customer_name }} - {{ doc.issue }}</p><p>Scheduled {{ doc.scheduled_date or 'as soon as possible' }}.</p>",
+  "recipients": [
+   {
+    "doctype": "Notification Recipient",
+    "receiver_by_document_field": "technician_user"
+   }
+  ]
+ },
+ {
+  "doctype": "Notification",
+  "name": "fieldpro: Job Needs Approval",
+  "subject": "Approve job {{ doc.name }}: {{ doc.issue }}",
+  "document_type": "Service Job",
+  "event": "Value Change",
+  "value_changed": "workflow_state",
+  "channel": "System Notification",
+  "enabled": 1,
+  "is_standard": 0,
+  "module": "Fieldpro",
+  "condition": "doc.workflow_state == 'Pending Approval'",
+  "message": "<p>{{ doc.technician_name }} finished a job estimated at {{ doc.get_formatted('estimated_value') }}. It needs your approval before the customer signs off.</p>",
+  "recipients": [
+   {
+    "doctype": "Notification Recipient",
+    "receiver_by_role": "Field Manager"
+   }
+  ]
+ }
+]

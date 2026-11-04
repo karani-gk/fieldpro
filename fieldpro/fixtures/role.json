@@ -1,0 +1,17 @@
+[
+ {
+  "doctype": "Role",
+  "name": "Field Technician",
+  "role_name": "Field Technician",
+  "desk_access": 0,
+  "home_page": "",
+  "disabled": 0
+ },
+ {
+  "doctype": "Role",
+  "name": "Field Manager",
+  "role_name": "Field Manager",
+  "desk_access": 1,
+  "disabled": 0
+ }
+]

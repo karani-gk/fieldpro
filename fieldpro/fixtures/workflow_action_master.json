@@ -1,0 +1,47 @@
+[
+ {
+  "doctype": "Workflow Action Master",
+  "name": "Assign",
+  "workflow_action_name": "Assign"
+ },
+ {
+  "doctype": "Workflow Action Master",
+  "name": "Start",
+  "workflow_action_name": "Start"
+ },
+ {
+  "doctype": "Workflow Action Master",
+  "name": "Complete",
+  "workflow_action_name": "Complete"
+ },
+ {
+  "doctype": "Workflow Action Master",
+  "name": "Approve",
+  "workflow_action_name": "Approve"
+ },
+ {
+  "doctype": "Workflow Action Master",
+  "name": "Send Back",
+  "workflow_action_name": "Send Back"
+ },
+ {
+  "doctype": "Workflow Action Master",
+  "name": "Sign Off On Site",
+  "workflow_action_name": "Sign Off On Site"
+ },
+ {
+  "doctype": "Workflow Action Master",
+  "name": "Accept",
+  "workflow_action_name": "Accept"
+ },
+ {
+  "doctype": "Workflow Action Master",
+  "name": "Reject",
+  "workflow_action_name": "Reject"
+ },
+ {
+  "doctype": "Workflow Action Master",
+  "name": "Cancel",
+  "workflow_action_name": "Cancel"
+ }
+]

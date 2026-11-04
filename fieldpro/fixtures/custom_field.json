@@ -1,0 +1,31 @@
+[
+ {
+  "doctype": "Custom Field",
+  "name": "Sales Invoice-service_job",
+  "dt": "Sales Invoice",
+  "module": "Fieldpro",
+  "fieldname": "service_job",
+  "label": "Service Job",
+  "fieldtype": "Link",
+  "options": "Service Job",
+  "insert_after": "customer_name",
+  "read_only": 1,
+  "no_copy": 1,
+  "allow_on_submit": 0,
+  "search_index": 1,
+  "description": "The fieldpro job this invoice bills."
+ },
+ {
+  "doctype": "Custom Field",
+  "name": "Sales Invoice-technician",
+  "dt": "Sales Invoice",
+  "module": "Fieldpro",
+  "fieldname": "technician",
+  "label": "Technician",
+  "fieldtype": "Link",
+  "options": "Technician",
+  "insert_after": "service_job",
+  "read_only": 1,
+  "no_copy": 1
+ }
+]
