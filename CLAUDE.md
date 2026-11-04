@@ -43,3 +43,8 @@ endpoints stay thin, rules live in `fieldpro/services/`, and comments explain wh
   elsewhere before the form (update_website_context redirect) rather than relying on the message.
 - An `on_login` hook must raise a Frappe exception (AuthenticationError); fieldpro's ApiError
   inside Frappe's own login becomes a 500.
+- Moving the bench folder breaks absolute paths in files AND symlinks: `sites/assets/<app>` and
+  `apps/*/<app>/public/node_modules` pointed at the old place, so every /assets URL was a 404 and
+  job card PDFs failed ("broken image links": wkhtmltopdf could not load print.bundle.css). After a
+  move, check `find . -xtype l` and `grep -rIl <old path>` (the shell's grep is a function that
+  skips env/; use `find ... -exec grep`).
