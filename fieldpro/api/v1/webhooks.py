@@ -9,7 +9,10 @@ from fieldpro.services.callbacks import CallbackReceiver
 
 
 @api(methods=["POST"], allow_guest=True)
-def receive(source: str):
+def receive(source: str | None = None):
+	# Providers post JSON, and Frappe builds the arguments from a JSON body alone, dropping the
+	# query string. So ?source= is read from the URL; the body is the provider's, not ours.
+	source = frappe.request.args.get("source") or source
 	body = frappe.request.get_data(as_text=True)
 	signature = frappe.get_request_header("X-Fieldpro-Signature")
 	return ok(CallbackReceiver().receive(source, body, signature))

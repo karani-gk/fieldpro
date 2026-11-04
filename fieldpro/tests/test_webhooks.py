@@ -51,6 +51,32 @@ class TestInboundCallbacks(FieldproTestCase):
 		self.assertRaises(Unauthorized, self.receiver().receive, "payment", body, old)
 		self.assertRaises(Unauthorized, self.receiver().receive, "payment", body, None)
 
+	def test_the_endpoint_reads_the_source_from_the_url_when_the_body_is_json(self):
+		# Providers post JSON. Frappe then builds form_dict from the body alone, so ?source= in
+		# the URL never reaches the function's arguments.
+		from unittest.mock import patch
+
+		from frappe.app import make_form_dict
+		from frappe.utils import set_request
+
+		from fieldpro.api.v1 import webhooks
+
+		job = factories.job(self.cust_x, technician_name=self.tech_a)
+		body = self.body(job)
+		set_request(
+			method="POST",
+			path="/api/method/fieldpro.api.v1.webhooks.receive",
+			query_string="source=payment",
+			data=body,
+			content_type="application/json",
+			headers={"X-Fieldpro-Signature": signature_header(SECRET, body)},
+		)
+		make_form_dict(frappe.request)
+		with patch("fieldpro.services.callbacks.AppSettings", Settings):
+			result = frappe.call(webhooks.receive, **frappe.form_dict)
+		self.assertEqual(result, {"data": {"status": "processed"}})
+		self.assertEqual(frappe.db.get_value("Service Job", job, "payment_status"), "Paid")
+
 
 class TestPartnerWebhooks(FieldproTestCase):
 	def test_queueing_an_event_twice_makes_one_delivery(self):
