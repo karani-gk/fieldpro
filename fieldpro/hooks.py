@@ -85,4 +85,8 @@ scheduler_events = {
 	"hourly": ["fieldpro.tasks.invoice_finished_jobs"],
 }
 
+# Nobody signs in until the installation is activated with a course access code.
+on_login = ["fieldpro.activation_hooks.refuse_sign_in"]
+update_website_context = ["fieldpro.activation_hooks.redirect_login_page"]
+
 jinja = {"methods": ["fieldpro.jinja.image_data_url", "fieldpro.jinja.company_name"]}

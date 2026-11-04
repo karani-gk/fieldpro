@@ -77,9 +77,16 @@ background jobs all follow the same rules.
 ```bash
 bench get-app https://github.com/karani-gk/fieldpro-frappe
 bench --site <site> install-app fieldpro
+bench --site <site> fieldpro-activate <code>  # once: the access code from your course email
 bench --site <site> fieldpro-demo             # optional: demo company, stock, people and jobs
 bench --site <site> run-tests --app fieldpro  # needs the demo data
 ```
+
+**Activation, once per installation.** Nobody can sign in until the installation is activated
+with the access code emailed to learners of
+[ERPNext as a Platform](https://www.upeo.academy/courses/erpnext-as-platform-course). Use the
+command above or open `/activate` on the site. The code is checked offline against a public key,
+so no internet connection is needed.
 
 `bench get-app` puts the app in `apps/fieldpro` (the app's name), whatever the repository is
 called. For the screens, set up [fieldpro-nextjs](https://github.com/karani-gk/fieldpro-nextjs)
@@ -126,7 +133,7 @@ builds one part of this app. Read along here:
 | Data model for API consumers | the DocType JSON files; `service_job.py` `on_doctype_update` (indexes) |
 | Extending ERPNext from your app | `fixtures/custom_field.json`, `patches/v1_0/`, `services/invoicing.py` |
 | A versioned API | `api/endpoint.py`, `api/errors.py`, `api/shapes.py`, `api/pagination.py`, `api/v1/` |
-| Authentication | `services/otp.py`, `api/v1/auth.py`, `docs/AUTH.md` |
+| Authentication | `services/otp.py`, `api/v1/auth.py`, `services/activation.py`, `docs/AUTH.md` |
 | Permissions as API security | `access.py`, `permissions.py`, `services/job_rules.py` (edit guard) |
 | Jobs, visits and parts | `services/jobs.py`, `services/visits.py`, `services/visit_rules.py` |
 | Workflows as state machines | `fixtures/workflow.json`, `services/job_flow.py`, `services/job_rules.py` |
@@ -161,6 +168,11 @@ Frappe and ERPNext v16, on Python 3.14.
 Yes. The code is MIT-licensed. The video course that teaches how it is built,
 [ERPNext as a Platform](https://www.upeo.academy/courses/erpnext-as-platform-course), is sold by
 UPEO Academy.
+
+**Why does it ask for an access code?**
+The code is free to read and learn from, and the course pays for its making. Each installation
+is activated once with the access code that course learners receive by email. See
+[docs/AUTH.md](docs/AUTH.md#activation-once-per-installation).
 
 **Do I need an SMS gateway?**
 No. Technicians get their sign-in code by email by default, which works in any country. SMS

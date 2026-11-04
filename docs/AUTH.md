@@ -7,6 +7,18 @@
 | Partner system | OAuth2 (Frappe is the provider) | `Authorization: Bearer <access_token>` |
 | Scripts and integrations you control | a user's API key | `Authorization: token <key>:<secret>` |
 
+## Activation, once per installation
+
+Before anything else, the installation is activated with the access code from the course email
+(`activation.activate {"code": "UA1...."}`, the `/activate` page, or
+`bench --site <site> fieldpro-activate <code>`). Until then every sign-in is refused: Desk and
+portal logins (an `on_login` hook), the technician's `request_otp` and `verify_otp`
+(`not_activated`, 403), and `/login` redirects to `/activate`. `activation.status` tells a client
+which to show. API tokens issued earlier keep working: the gate is at sign-in only.
+
+The code is signed by UPEO Academy (Ed25519) and checked here against the public key in
+`services/activation.py`, with no network call.
+
 ## Technician: code by email or SMS, then a token
 
 1. `POST auth.request_otp {"mobile_no": "+254700100001"}`. **Fieldpro Settings > Send Sign-in

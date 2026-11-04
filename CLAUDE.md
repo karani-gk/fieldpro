@@ -8,7 +8,14 @@ endpoints stay thin, rules live in `fieldpro/services/`, and comments explain wh
 - Tests: `bench --site fieldpro.localhost run-tests --app fieldpro` (needs the demo company: run
   `bench --site <site> fieldpro-demo` once on a new site). Lint: `ruff check fieldpro && ruff format fieldpro`.
 - Python 3.14: ruff writes PEP 758 `except A, B:` without parentheses. That is valid here.
-- No GitHub remote yet: ask the owner before creating one.
+- Repos are public: karani-gk/fieldpro-frappe (this app) and karani-gk/fieldpro-nextjs (renamed
+  2026-11-04 from fieldpro and fieldpro-app; GitHub redirects the old names). MIT, (c) Upeosoft.
+- Activation (2026-11-04, owner's decision): nobody signs in until the installation is activated
+  ONCE with the access code UPEO Academy emails to course buyers (`services/activation.py`).
+  Codes are Ed25519-signed by the academy (`academy/catalogue/system_access.py`, private key in
+  its site_config `system_access_signing_key`, owner's copy at ~/.config/upeo/); only the public
+  key is here. Changing the key pair means shipping the new public key here. The local site is
+  activated with a test code for e2e-learner@example.com.
 
 ## Traps found while building (2026-11-04)
 
@@ -30,3 +37,9 @@ endpoints stay thin, rules live in `fieldpro/services/`, and comments explain wh
 - `frappe.sendmail` raises OutgoingEmailError when no outgoing Email Account exists (it only queues
   with one, a site_config account, or `mute_emails`). Check `EmailAccount.find_outgoing()` first,
   as `otp.default_email_sender` does; that lookup is cached on `frappe.local` per request.
+- `frappe.Redirect` defaults to 301, which browsers cache: a redirect that must stop later (the
+  /login to /activate one) raises `frappe.Redirect(302)`.
+- Frappe's Desk login page shows "Invalid Login" for any error, whatever the message: send people
+  elsewhere before the form (update_website_context redirect) rather than relying on the message.
+- An `on_login` hook must raise a Frappe exception (AuthenticationError); fieldpro's ApiError
+  inside Frappe's own login becomes a 500.

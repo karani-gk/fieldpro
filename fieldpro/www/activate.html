@@ -1,0 +1,40 @@
+{% extends "templates/web.html" %}
+
+{% block page_content %}
+<div style="max-width: 520px; margin: 48px auto;">
+	<h1 style="font-size: 1.75rem; margin-bottom: 12px;">Activate fieldpro</h1>
+	{% if activated %}
+	<p>This installation is activated. <a href="/login">Sign in</a>.</p>
+	{% else %}
+	<p>Enter the access code from your course email. You do this once; after that everyone signs in
+		as usual.</p>
+	<form id="activate-form">
+		<label for="code" style="display: block; font-weight: 600; margin: 16px 0 6px;">Access code</label>
+		<textarea id="code" name="code" rows="4" required class="form-control"
+			placeholder="UA1...." style="font-family: monospace;"></textarea>
+		<button type="submit" class="btn btn-primary" style="margin-top: 12px;">Activate</button>
+		<p id="activate-error" role="alert" style="color: var(--red-600, #c00); margin-top: 12px;"></p>
+	</form>
+	<p style="margin-top: 24px; color: var(--text-muted);">No code yet? It comes by email when you join
+		<a href="{{ course_url }}">ERPNext as a Platform</a> at UPEO Academy.</p>
+	<script>
+		document.getElementById("activate-form").addEventListener("submit", async (event) => {
+			event.preventDefault();
+			const error = document.getElementById("activate-error");
+			error.textContent = "";
+			const response = await fetch("/api/method/fieldpro.api.v1.activation.activate", {
+				method: "POST",
+				headers: { "Content-Type": "application/json", Accept: "application/json" },
+				body: JSON.stringify({ code: document.getElementById("code").value }),
+			});
+			const body = await response.json().catch(() => ({}));
+			if (response.ok) {
+				window.location.href = "/login";
+			} else {
+				error.textContent = body.error?.message || "Something went wrong. Try again.";
+			}
+		});
+	</script>
+	{% endif %}
+</div>
+{% endblock %}

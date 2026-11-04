@@ -8,7 +8,9 @@
 > and the code built in UPEO Academy's course "ERPNext as a Platform".
 
 Install with `bench get-app https://github.com/karani-gk/fieldpro-frappe`, then
-`bench --site <site> install-app fieldpro`. The Frappe app is named `fieldpro`. Business rules live
+`bench --site <site> install-app fieldpro`, then activate once with the access code emailed to
+course learners (`bench --site <site> fieldpro-activate <code>` or the `/activate` page); until
+then nobody can sign in. The Frappe app is named `fieldpro`. Business rules live
 in `fieldpro/services/`; API endpoints in `fieldpro/api/v1/` stay thin.
 
 ## Docs

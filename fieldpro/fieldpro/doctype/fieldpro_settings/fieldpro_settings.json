@@ -20,7 +20,11 @@
   "column_break_webhooks",
   "inbound_webhook_secret",
   "section_sign_in",
-  "sign_in_code_channel"
+  "sign_in_code_channel",
+  "section_activation",
+  "activated_for",
+  "activated_on",
+  "access_code"
  ],
  "fields": [
   {
@@ -116,13 +120,38 @@
    "options": "Email\nSMS",
    "default": "Email",
    "description": "Email reaches technicians in any country with no gateway to pay for. SMS uses the gateway in SMS Settings."
+  },
+  {
+   "fieldname": "section_activation",
+   "fieldtype": "Section Break",
+   "label": "Activation",
+   "description": "Set once, from /activate or bench fieldpro-activate, with the access code from the course email."
+  },
+  {
+   "fieldname": "activated_for",
+   "fieldtype": "Data",
+   "label": "Activated For",
+   "options": "Email",
+   "read_only": 1
+  },
+  {
+   "fieldname": "activated_on",
+   "fieldtype": "Datetime",
+   "label": "Activated On",
+   "read_only": 1
+  },
+  {
+   "fieldname": "access_code",
+   "fieldtype": "Small Text",
+   "label": "Access Code",
+   "read_only": 1
   }
  ],
  "index_web_pages_for_search": 0,
  "istable": 0,
  "issingle": 1,
  "links": [],
- "modified": "2026-11-04 15:00:00.000000",
+ "modified": "2026-11-04 16:00:00.000000",
  "modified_by": "Administrator",
  "module": "Fieldpro",
  "name": "Fieldpro Settings",

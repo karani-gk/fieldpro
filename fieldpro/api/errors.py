@@ -59,6 +59,12 @@ class Forbidden(ApiError):
 	code = "forbidden"
 
 
+class NotActivated(Forbidden):
+	"""Nobody signs in until the installation is activated (services/activation.py)."""
+
+	code = "not_activated"
+
+
 class NotFound(ApiError):
 	status = 404
 	code = "not_found"

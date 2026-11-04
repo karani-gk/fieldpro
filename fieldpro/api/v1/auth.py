@@ -14,12 +14,14 @@ from frappe.rate_limiter import rate_limit
 from fieldpro.access import AccessProfile
 from fieldpro.api.endpoint import api, ok
 from fieldpro.api.errors import Unauthorized
+from fieldpro.services.activation import Activation
 from fieldpro.services.otp import OtpService, TokenIssuer
 
 
 @api(methods=["POST"], allow_guest=True)
 @rate_limit(limit=10, seconds=600)
 def request_otp(mobile_no: str):
+	Activation().require()
 	OtpService().request(mobile_no)
 	return ok({"sent": True, "message": _("If this number belongs to a technician, a code is on its way.")})
 
@@ -27,6 +29,7 @@ def request_otp(mobile_no: str):
 @api(methods=["POST"], allow_guest=True)
 @rate_limit(limit=20, seconds=600)
 def verify_otp(mobile_no: str, code: str):
+	Activation().require()
 	return ok(OtpService().verify(mobile_no, code))
 
 
