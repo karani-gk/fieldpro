@@ -3,8 +3,8 @@
 Teaching project for UPEO Academy's "ERPNext as a Platform" course: learners read this code, so
 endpoints stay thin, rules live in `fieldpro/services/`, and comments explain why.
 
-- Bench: `/home/karani/teaching/fieldpro-bench` (Frappe 16.23.0, ERPNext 16.23.1), site
-  `fieldpro.localhost`, ports 8030/9030/11030/13030. Start with `/home/karani/teaching/start-backend.sh`.
+- Bench: `/home/karani/projects/teaching/fieldpro-bench` (Frappe 16.23.0, ERPNext 16.23.1), site
+  `fieldpro.localhost`, ports 8030/9030/11030/13030. Start with `/home/karani/projects/teaching/start-backend.sh`.
 - Tests: `bench --site fieldpro.localhost run-tests --app fieldpro` (needs the demo company: run
   `bench --site <site> fieldpro-demo` once on a new site). Lint: `ruff check fieldpro && ruff format fieldpro`.
 - Python 3.14: ruff writes PEP 758 `except A, B:` without parentheses. That is valid here.
