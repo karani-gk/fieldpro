@@ -101,7 +101,7 @@ next to it.
 |---|---|---|
 | Technician (Achieng, Otieno, Wanjiru) | technician app `/tech` | `achieng@fieldpro.test` or `0700 100001` (`…002`, `…003`) with the password, or a one-time code |
 | Customer (Wanjiku Clinic and two more) | customer portal `/portal` | `clinic@fieldpro.test`, `apartments@fieldpro.test`, `supermarket@fieldpro.test` |
-| Manager | Desk `/app/service-job` | `manager@fieldpro.test` |
+| Manager | Desk: the **Field Service** icon, or `/app/field-service` | `manager@fieldpro.test` |
 
 On a local machine nothing is sent: with no outgoing Email Account or SMS gateway, the sign-in
 code is saved in Desk under **SMS Log**. On a real site, **Fieldpro Settings > Send Sign-in Codes
@@ -119,6 +119,7 @@ By** chooses Email (the default) or SMS.
 | `fieldpro/tasks.py`, `hooks.py` | Scheduled work and wiring |
 | `fieldpro/fieldpro/print_format/job_card/` | The Job Card PDF |
 | `fieldpro/fieldpro/report/technician_performance/` | Jobs and hours by technician in Desk |
+| `fieldpro/desktop_icon/`, `workspace_sidebar/`, `fieldpro/workspace/`, `fieldpro/number_card/`, `fieldpro/dashboard_chart/` | The Field Service desk: its icon, sidebar, workspace, number cards and charts, synced on install and migrate. `services/job_board.py` adds the Job Board (Kanban) |
 | `fieldpro/demo.py`, `commands.py` | `bench fieldpro-demo` |
 | `fieldpro/tests/` | Permission, workflow, sync, invoicing, webhook, sign-in and API-contract tests |
 | `docs/` | [API.md](docs/API.md) (the contract), [AUTH.md](docs/AUTH.md) (signing in, per client), `bruno/` (a request collection) |

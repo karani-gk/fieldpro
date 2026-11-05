@@ -1,0 +1,21 @@
+{
+ "app": "fieldpro",
+ "bg_color": "gray",
+ "creation": "2026-11-05 10:33:14.886818",
+ "docstatus": 0,
+ "doctype": "Desktop Icon",
+ "hidden": 0,
+ "icon": "wrench",
+ "icon_type": "Link",
+ "idx": 1,
+ "label": "Field Service",
+ "link_to": "Field Service",
+ "link_type": "Workspace Sidebar",
+ "modified": "2026-11-05 10:40:25.783431",
+ "modified_by": "Administrator",
+ "name": "Field Service",
+ "owner": "Administrator",
+ "restrict_removal": 0,
+ "roles": [],
+ "standard": 1
+}

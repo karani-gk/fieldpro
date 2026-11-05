@@ -1,0 +1,224 @@
+{
+ "app": "fieldpro",
+ "charts": [
+  {
+   "chart_name": "Jobs Booked per Day",
+   "label": "Jobs Booked per Day"
+  },
+  {
+   "chart_name": "Jobs by Status",
+   "label": "Jobs by Status"
+  },
+  {
+   "chart_name": "Open Jobs per Technician",
+   "label": "Open Jobs per Technician"
+  }
+ ],
+ "content": "[{\"id\": \"fs-01\", \"type\": \"header\", \"data\": {\"text\": \"<span class=\\\"h4\\\"><b>Today in the field</b></span>\", \"col\": 12}}, {\"id\": \"fs-02\", \"type\": \"number_card\", \"data\": {\"number_card_name\": \"Jobs Booked Today\", \"col\": 4}}, {\"id\": \"fs-03\", \"type\": \"number_card\", \"data\": {\"number_card_name\": \"Waiting for a Technician\", \"col\": 4}}, {\"id\": \"fs-04\", \"type\": \"number_card\", \"data\": {\"number_card_name\": \"Jobs In Progress\", \"col\": 4}}, {\"id\": \"fs-05\", \"type\": \"number_card\", \"data\": {\"number_card_name\": \"Waiting for Approval\", \"col\": 4}}, {\"id\": \"fs-06\", \"type\": \"number_card\", \"data\": {\"number_card_name\": \"Done This Week\", \"col\": 4}}, {\"id\": \"fs-07\", \"type\": \"number_card\", \"data\": {\"number_card_name\": \"Done but Not Invoiced\", \"col\": 4}}, {\"id\": \"fs-08\", \"type\": \"chart\", \"data\": {\"chart_name\": \"Jobs Booked per Day\", \"col\": 12}}, {\"id\": \"fs-09\", \"type\": \"header\", \"data\": {\"text\": \"<span class=\\\"h4\\\"><b>Quick actions</b></span>\", \"col\": 12}}, {\"id\": \"fs-10\", \"type\": \"shortcut\", \"data\": {\"shortcut_name\": \"New Job\", \"col\": 4}}, {\"id\": \"fs-11\", \"type\": \"shortcut\", \"data\": {\"shortcut_name\": \"All Jobs\", \"col\": 4}}, {\"id\": \"fs-12\", \"type\": \"shortcut\", \"data\": {\"shortcut_name\": \"Unassigned\", \"col\": 4}}, {\"id\": \"fs-13\", \"type\": \"shortcut\", \"data\": {\"shortcut_name\": \"Today's Visits\", \"col\": 4}}, {\"id\": \"fs-14\", \"type\": \"shortcut\", \"data\": {\"shortcut_name\": \"Job Board\", \"col\": 4}}, {\"id\": \"fs-15\", \"type\": \"shortcut\", \"data\": {\"shortcut_name\": \"Calendar\", \"col\": 4}}, {\"id\": \"fs-16\", \"type\": \"chart\", \"data\": {\"chart_name\": \"Jobs by Status\", \"col\": 12}}, {\"id\": \"fs-17\", \"type\": \"chart\", \"data\": {\"chart_name\": \"Open Jobs per Technician\", \"col\": 12}}, {\"id\": \"fs-18\", \"type\": \"header\", \"data\": {\"text\": \"<span class=\\\"h4\\\"><b>Records and settings</b></span>\", \"col\": 12}}, {\"id\": \"fs-19\", \"type\": \"card\", \"data\": {\"card_name\": \"Field Work\", \"col\": 4}}, {\"id\": \"fs-20\", \"type\": \"card\", \"data\": {\"card_name\": \"Customers and Billing\", \"col\": 4}}, {\"id\": \"fs-21\", \"type\": \"card\", \"data\": {\"card_name\": \"Reports and Settings\", \"col\": 4}}]",
+ "creation": "2026-11-05 10:33:14.523136",
+ "custom_blocks": [],
+ "docstatus": 0,
+ "doctype": "Workspace",
+ "hide_custom": 0,
+ "icon": "tool",
+ "idx": 0,
+ "indicator_color": "green",
+ "is_hidden": 0,
+ "label": "Field Service",
+ "link_type": "DocType",
+ "links": [
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Field Work",
+   "link_count": 3,
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Card Break"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Service Job",
+   "link_count": 0,
+   "link_to": "Service Job",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Job Visit",
+   "link_count": 0,
+   "link_to": "Job Visit",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Technician",
+   "link_count": 0,
+   "link_to": "Technician",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Customers and Billing",
+   "link_count": 2,
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Card Break"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Customer",
+   "link_count": 0,
+   "link_to": "Customer",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Sales Invoice",
+   "link_count": 0,
+   "link_to": "Sales Invoice",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Reports and Settings",
+   "link_count": 2,
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Card Break"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 1,
+   "label": "Technician Performance",
+   "link_count": 0,
+   "link_to": "Technician Performance",
+   "link_type": "Report",
+   "onboard": 0,
+   "report_ref_doctype": "Job Visit",
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Fieldpro Settings",
+   "link_count": 0,
+   "link_to": "Fieldpro Settings",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  }
+ ],
+ "modified": "2026-11-05 10:40:25.600519",
+ "modified_by": "Administrator",
+ "module": "Fieldpro",
+ "name": "Field Service",
+ "number_cards": [
+  {
+   "label": "Jobs Booked Today",
+   "number_card_name": "Jobs Booked Today"
+  },
+  {
+   "label": "Waiting for a Technician",
+   "number_card_name": "Waiting for a Technician"
+  },
+  {
+   "label": "Jobs In Progress",
+   "number_card_name": "Jobs In Progress"
+  },
+  {
+   "label": "Waiting for Approval",
+   "number_card_name": "Waiting for Approval"
+  },
+  {
+   "label": "Done This Week",
+   "number_card_name": "Done This Week"
+  },
+  {
+   "label": "Done but Not Invoiced",
+   "number_card_name": "Done but Not Invoiced"
+  }
+ ],
+ "owner": "Administrator",
+ "public": 1,
+ "quick_lists": [],
+ "roles": [
+  {
+   "role": "Field Manager"
+  },
+  {
+   "role": "System Manager"
+  }
+ ],
+ "sequence_id": 30.0,
+ "shortcuts": [
+  {
+   "doc_view": "New",
+   "label": "New Job",
+   "link_to": "Service Job",
+   "type": "DocType"
+  },
+  {
+   "color": "Blue",
+   "doc_view": "List",
+   "format": "{} jobs",
+   "label": "All Jobs",
+   "link_to": "Service Job",
+   "type": "DocType"
+  },
+  {
+   "color": "Orange",
+   "doc_view": "List",
+   "format": "{} waiting",
+   "label": "Unassigned",
+   "link_to": "Service Job",
+   "stats_filter": "[[\"Service Job\", \"workflow_state\", \"=\", \"Booked\"]]",
+   "type": "DocType"
+  },
+  {
+   "color": "Green",
+   "doc_view": "List",
+   "format": "{} today",
+   "label": "Today's Visits",
+   "link_to": "Job Visit",
+   "stats_filter": "[[\"Job Visit\", \"started_at\", \"Timespan\", \"today\"]]",
+   "type": "DocType"
+  },
+  {
+   "color": "Blue",
+   "doc_view": "Kanban",
+   "format": "{} open",
+   "kanban_board": "Job Board",
+   "label": "Job Board",
+   "link_to": "Service Job",
+   "stats_filter": "[[\"Service Job\", \"workflow_state\", \"not in\", [\"Done\", \"Cancelled\"]]]",
+   "type": "DocType"
+  },
+  {
+   "doc_view": "Calendar",
+   "format": "{} jobs",
+   "label": "Calendar",
+   "link_to": "Service Job",
+   "type": "DocType"
+  }
+ ],
+ "title": "Field Service",
+ "type": "Workspace"
+}

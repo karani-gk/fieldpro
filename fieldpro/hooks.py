@@ -55,6 +55,10 @@ fixtures = [
 	{"dt": "Notification", "filters": [["module", "=", "Fieldpro"]]},
 ]
 
+# The Job Board (Kanban) has no standard-file form, so it is created in code, once (job_board.py).
+after_install = ["fieldpro.services.job_board.ensure_job_board"]
+after_migrate = ["fieldpro.services.job_board.ensure_job_board"]
+
 # Row-level security (permissions.py): technicians see their jobs, customers their company's.
 permission_query_conditions = {
 	"Service Job": "fieldpro.permissions.service_job_query",

@@ -48,3 +48,21 @@ endpoints stay thin, rules live in `fieldpro/services/`, and comments explain wh
   job card PDFs failed ("broken image links": wkhtmltopdf could not load print.bundle.css). After a
   move, check `find . -xtype l` and `grep -rIl <old path>` (the shell's grep is a function that
   skips env/; use `find ... -exec grep`).
+
+## Field Service desk (2026-11-05)
+
+- The Desk home icon, sidebar, workspace, number cards and charts are standard files: edit them in
+  Desk with developer_mode on and Frappe rewrites the files. Migrate deletes a standard Desktop Icon
+  or Workspace Sidebar that has no file (`remove_orphan_entities`), so never keep one only in the DB.
+- In Frappe 16.23 the Desktop Icon `roles` table is not checked. A sidebar icon shows when the user
+  can see at least one item in its Workspace Sidebar, so that sidebar lists only fieldpro DocTypes:
+  adding Customer or Sales Invoice there would give the icon to every accountant. The workspace
+  itself is limited to Field Manager and System Manager by its roles.
+- The icon image is found by name: `public/icons/desktop_icons/{solid,subtle}/field_service.svg`
+  (scrubbed label), one per Desk icon style. `logo_url` is only a fallback.
+- Kanban Boards have no standard form; `services/job_board.py` creates the Job Board once
+  (after_install, after_migrate) and never overwrites it.
+- A shortcut's `stats_filter` with 5-element filters loses its last filter (`cleanup_filters` in
+  Frappe's utils.js): write 4-element filters.
+- The Desk home logs one 404 for `/undefined` with or without the Field Service icon: it is
+  Frappe's, not ours.
