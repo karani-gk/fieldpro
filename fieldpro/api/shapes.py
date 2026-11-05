@@ -99,3 +99,14 @@ def part(row, currency: str | None = None) -> dict:
 
 def action(transition) -> dict:
 	return {"action": transition.action, "next_status": transition.next_state}
+
+
+def manager_job(detail: dict, doc) -> dict:
+	"""A job as the manager's screens see it: the client detail plus what only managers need."""
+	return {
+		**detail,
+		"estimated_value_raw": flt(doc.estimated_value),
+		"signature_url": doc.customer_signoff or None,
+		"created_at": to_iso(doc.creation),
+		"last_activity_at": to_iso(doc.last_activity_at),
+	}
