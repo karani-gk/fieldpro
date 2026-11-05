@@ -1,0 +1,11 @@
+{
+	"name": "fieldpro",
+	"private": true,
+	"description": "Builds the manager's Vue app in frontend/. bench build runs `yarn build` here.",
+	"scripts": {
+		"postinstall": "cd frontend && yarn install --frozen-lockfile",
+		"build": "cd frontend && yarn build",
+		"dev": "cd frontend && yarn dev",
+		"test": "cd frontend && yarn test"
+	}
+}

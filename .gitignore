@@ -53,3 +53,8 @@ jspm_packages/
 
 # Aider AI Chat
 .aider*
+
+# The manager app's build output: `bench build` makes it from frontend/
+fieldpro/public/manage/
+# bench build links the app's node_modules here once the app has a package.json
+fieldpro/public/node_modules

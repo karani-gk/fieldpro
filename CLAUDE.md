@@ -66,3 +66,18 @@ endpoints stay thin, rules live in `fieldpro/services/`, and comments explain wh
   Frappe's utils.js): write 4-element filters.
 - The Desk home logs one 404 for `/undefined` with or without the Field Service icon: it is
   Frappe's, not ours.
+
+## Manager app in Vue (2026-11-05)
+
+- The owner asked for the manager interface in Vue.js: `frontend/` (Vue 3, vue-router 4, Vite 8,
+  plain CSS with the Next.js app's palette; no UI kit) served at `/manage` by `www/manage.py`.
+  The Desk workspace stays as it is. API: `api/v1/manage.py` over `services/dispatch.py`.
+- `bench build` runs the root package.json `build` (`cd frontend && yarn build`); output goes to
+  `fieldpro/public/manage/` (gitignored) and `www/manage.py` finds the hashed files in Vite's
+  `.vite/manifest.json`. Vite 8 calls the input option `rolldownOptions`, not `rollupOptions`.
+- The workflow's Assign transition has the condition `doc.technician`, so `get_transitions`
+  never offers Assign for a job without one: the board treats Booked to Assigned as "open the
+  assign dialog" (`frontend/src/lib/board.js` dropAction).
+- Field Manager alone cannot read Customer; the booking picker uses `get_all` behind ManagerOnly.
+- Dashboard counts come from the workspace's Number Cards (`get_result` with the card's own
+  `filters_json`): change a card in Desk and both screens follow.

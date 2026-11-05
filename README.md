@@ -12,7 +12,7 @@
 **fieldpro-frappe** is an open-source field service management app for
 [Frappe](https://frappe.io/framework) and [ERPNext](https://erpnext.com). It takes a service job
 from booking to invoice: customers book work and approve it, technicians record visits, parts,
-photos and signatures (even with no signal), managers assign and approve in ERPNext Desk, and
+photos and signatures (even with no signal), managers assign and approve in their own Vue app (or ERPNext Desk), and
 accounts gets a draft Sales Invoice for every finished job.
 
 It is the backend for three clients: a technician app, a customer portal
@@ -51,6 +51,9 @@ It is also the code you build, lesson by lesson, in UPEO Academy's course
   Invoice, with an hourly sweep as a safety net.
 - **Webhooks in and out:** signed callbacks from SMS and payment providers; signed deliveries to
   partner systems, with retries.
+- **A manager's app in Vue.js (`/manage`):** a dashboard, a drag-and-drop job board, a job list
+  and job screen (assign, approve, send back, cancel, edit), technician workload and booking by
+  phone. It uses the Desk session and the same rules as Desk.
 - **Documents and reports:** a Job Card PDF print format and a Technician Performance report.
 
 ## How it fits together
@@ -101,7 +104,7 @@ next to it.
 |---|---|---|
 | Technician (Achieng, Otieno, Wanjiru) | technician app `/tech` | `achieng@fieldpro.test` or `0700 100001` (`…002`, `…003`) with the password, or a one-time code |
 | Customer (Wanjiku Clinic and two more) | customer portal `/portal` | `clinic@fieldpro.test`, `apartments@fieldpro.test`, `supermarket@fieldpro.test` |
-| Manager | Desk: the **Field Service** icon, or `/app/field-service` | `manager@fieldpro.test` |
+| Manager | The Vue app at `/manage`, or in Desk the **Field Service** icon (`/app/field-service`) | `manager@fieldpro.test` |
 
 On a local machine nothing is sent: with no outgoing Email Account or SMS gateway, the sign-in
 code is saved in Desk under **SMS Log**. On a real site, **Fieldpro Settings > Send Sign-in Codes
@@ -120,6 +123,7 @@ By** chooses Email (the default) or SMS.
 | `fieldpro/fieldpro/print_format/job_card/` | The Job Card PDF |
 | `fieldpro/fieldpro/report/technician_performance/` | Jobs and hours by technician in Desk |
 | `fieldpro/desktop_icon/`, `workspace_sidebar/`, `fieldpro/workspace/`, `fieldpro/number_card/`, `fieldpro/dashboard_chart/` | The Field Service desk: its icon, sidebar, workspace, number cards and charts, synced on install and migrate. `services/job_board.py` adds the Job Board (Kanban) |
+| `frontend/`, `fieldpro/www/manage.py`, `services/dispatch.py`, `api/v1/manage.py` | The manager's Vue app: Vue 3 + Vite source, the page that serves it at `/manage`, and its API. `bench build` builds it into `fieldpro/public/manage/` |
 | `fieldpro/demo.py`, `commands.py` | `bench fieldpro-demo` |
 | `fieldpro/tests/` | Permission, workflow, sync, invoicing, webhook, sign-in and API-contract tests |
 | `docs/` | [API.md](docs/API.md) (the contract), [AUTH.md](docs/AUTH.md) (signing in, per client), `bruno/` (a request collection) |
@@ -151,7 +155,11 @@ builds one part of this app. Read along here:
 ```bash
 bench --site <site> run-tests --app fieldpro
 cd apps/fieldpro && ruff check fieldpro && ruff format --check fieldpro
+cd apps/fieldpro/frontend && yarn test      # the manager app's logic (Vitest)
 ```
+
+Working on the manager app: `cd apps/fieldpro/frontend && yarn dev` rebuilds on every save;
+reload `/manage` to see the change.
 
 GitHub Actions runs the tests on Frappe v16 for every push to `main` and every pull request.
 

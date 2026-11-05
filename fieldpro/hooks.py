@@ -93,4 +93,7 @@ scheduler_events = {
 on_login = ["fieldpro.activation_hooks.refuse_sign_in"]
 update_website_context = ["fieldpro.activation_hooks.redirect_login_page"]
 
+# The manager's Vue app owns every path under /manage (www/manage.py serves it).
+website_route_rules = [{"from_route": "/manage/<path:app_path>", "to_route": "manage"}]
+
 jinja = {"methods": ["fieldpro.jinja.image_data_url", "fieldpro.jinja.company_name"]}

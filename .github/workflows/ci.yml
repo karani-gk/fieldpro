@@ -107,3 +107,7 @@ jobs:
           bench --site test_site run-tests --app fieldpro
         env:
           TYPE: server
+
+      - name: Test the manager app
+        working-directory: /home/runner/frappe-bench/apps/fieldpro/frontend
+        run: yarn test

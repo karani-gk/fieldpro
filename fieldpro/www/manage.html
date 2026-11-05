@@ -1,0 +1,24 @@
+<!doctype html>
+<html lang="en">
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title>{{ title }}</title>
+	<link rel="icon" href="/assets/fieldpro/icons/desktop_icons/solid/field_service.svg">
+	{% for href in styles %}<link rel="stylesheet" href="{{ href }}">{% endfor %}
+</head>
+<body>
+	<div id="app"></div>
+	<script>
+		window.csrf_token = "{{ csrf_token }}";
+		window.fieldpro_boot = {{ boot | safe }};
+	</script>
+	{% if script %}
+	<script type="module" src="{{ script }}"></script>
+	{% else %}
+	<p style="font-family: system-ui; max-width: 520px; margin: 48px auto;">
+		The manager app is not built yet. Run <code>bench build --app fieldpro</code> and reload.
+	</p>
+	{% endif %}
+</body>
+</html>
