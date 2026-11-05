@@ -54,6 +54,18 @@ class TestActivation(FieldproTestCase):
 		Activation(self.verifier).activate(self.academy.code(email="other@example.com"))
 		self.assertEqual(frappe.get_single("Fieldpro Settings").activated_for, "amina@example.com")
 
+	def test_a_new_installation_without_a_company_is_activated(self):
+		# Right after install-app, before fieldpro-demo or any setup, the company and labour item
+		# are empty. Activation must not need them: nobody can sign in to fill them in until it works.
+		before = frappe.db.get_value("Fieldpro Settings", None, ["company", "labour_item"], as_dict=True)
+		self.addCleanup(
+			lambda: [frappe.db.set_single_value("Fieldpro Settings", k, v) for k, v in before.items()]
+		)
+		for field in ("company", "labour_item"):
+			frappe.db.set_single_value("Fieldpro Settings", field, None)
+		Activation(self.verifier).activate(self.academy.code())
+		self.assertTrue(Activation().is_active())
+
 	def test_a_code_pasted_with_line_breaks_still_works(self):
 		code = self.academy.code()
 		Activation(self.verifier).activate(f"  {code[:40]}\n{code[40:]}  ")

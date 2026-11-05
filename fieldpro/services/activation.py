@@ -102,6 +102,9 @@ class Activation:
 		# The whole doc is saved, not one value: set_single_value on a never-saved Single drops
 		# every other field's default.
 		self.settings.flags.ignore_permissions = True
+		# A new installation has no company or labour item yet, and nobody can sign in to set them
+		# until this works. Activation writes only its own fields; Desk still requires the others.
+		self.settings.flags.ignore_mandatory = True
 		self.settings.save()
 		return self.status()
 
