@@ -14,7 +14,7 @@
    "label": "Open Jobs per Technician"
   }
  ],
- "content": "[{\"id\": \"fs-01\", \"type\": \"header\", \"data\": {\"text\": \"<span class=\\\"h4\\\"><b>Today in the field</b></span>\", \"col\": 12}}, {\"id\": \"fs-02\", \"type\": \"number_card\", \"data\": {\"number_card_name\": \"Jobs Booked Today\", \"col\": 4}}, {\"id\": \"fs-03\", \"type\": \"number_card\", \"data\": {\"number_card_name\": \"Waiting for a Technician\", \"col\": 4}}, {\"id\": \"fs-04\", \"type\": \"number_card\", \"data\": {\"number_card_name\": \"Jobs In Progress\", \"col\": 4}}, {\"id\": \"fs-05\", \"type\": \"number_card\", \"data\": {\"number_card_name\": \"Waiting for Approval\", \"col\": 4}}, {\"id\": \"fs-06\", \"type\": \"number_card\", \"data\": {\"number_card_name\": \"Done This Week\", \"col\": 4}}, {\"id\": \"fs-07\", \"type\": \"number_card\", \"data\": {\"number_card_name\": \"Done but Not Invoiced\", \"col\": 4}}, {\"id\": \"fs-08\", \"type\": \"chart\", \"data\": {\"chart_name\": \"Jobs Booked per Day\", \"col\": 12}}, {\"id\": \"fs-09\", \"type\": \"header\", \"data\": {\"text\": \"<span class=\\\"h4\\\"><b>Quick actions</b></span>\", \"col\": 12}}, {\"id\": \"fs-10\", \"type\": \"shortcut\", \"data\": {\"shortcut_name\": \"New Job\", \"col\": 4}}, {\"id\": \"fs-11\", \"type\": \"shortcut\", \"data\": {\"shortcut_name\": \"All Jobs\", \"col\": 4}}, {\"id\": \"fs-12\", \"type\": \"shortcut\", \"data\": {\"shortcut_name\": \"Unassigned\", \"col\": 4}}, {\"id\": \"fs-13\", \"type\": \"shortcut\", \"data\": {\"shortcut_name\": \"Today's Visits\", \"col\": 4}}, {\"id\": \"fs-14\", \"type\": \"shortcut\", \"data\": {\"shortcut_name\": \"Job Board\", \"col\": 4}}, {\"id\": \"fs-15\", \"type\": \"shortcut\", \"data\": {\"shortcut_name\": \"Calendar\", \"col\": 4}}, {\"id\": \"fs-16\", \"type\": \"chart\", \"data\": {\"chart_name\": \"Jobs by Status\", \"col\": 12}}, {\"id\": \"fs-17\", \"type\": \"chart\", \"data\": {\"chart_name\": \"Open Jobs per Technician\", \"col\": 12}}, {\"id\": \"fs-18\", \"type\": \"header\", \"data\": {\"text\": \"<span class=\\\"h4\\\"><b>Records and settings</b></span>\", \"col\": 12}}, {\"id\": \"fs-19\", \"type\": \"card\", \"data\": {\"card_name\": \"Field Work\", \"col\": 4}}, {\"id\": \"fs-20\", \"type\": \"card\", \"data\": {\"card_name\": \"Customers and Billing\", \"col\": 4}}, {\"id\": \"fs-21\", \"type\": \"card\", \"data\": {\"card_name\": \"Reports and Settings\", \"col\": 4}}]",
+ "content": "[{\"id\": \"fs-00\", \"type\": \"shortcut\", \"data\": {\"shortcut_name\": \"Open Manager App\", \"col\": 12}}, {\"id\": \"fs-01\", \"type\": \"header\", \"data\": {\"text\": \"<span class=\\\"h4\\\"><b>Today in the field</b></span>\", \"col\": 12}}, {\"id\": \"fs-02\", \"type\": \"number_card\", \"data\": {\"number_card_name\": \"Jobs Booked Today\", \"col\": 4}}, {\"id\": \"fs-03\", \"type\": \"number_card\", \"data\": {\"number_card_name\": \"Waiting for a Technician\", \"col\": 4}}, {\"id\": \"fs-04\", \"type\": \"number_card\", \"data\": {\"number_card_name\": \"Jobs In Progress\", \"col\": 4}}, {\"id\": \"fs-05\", \"type\": \"number_card\", \"data\": {\"number_card_name\": \"Waiting for Approval\", \"col\": 4}}, {\"id\": \"fs-06\", \"type\": \"number_card\", \"data\": {\"number_card_name\": \"Done This Week\", \"col\": 4}}, {\"id\": \"fs-07\", \"type\": \"number_card\", \"data\": {\"number_card_name\": \"Done but Not Invoiced\", \"col\": 4}}, {\"id\": \"fs-08\", \"type\": \"chart\", \"data\": {\"chart_name\": \"Jobs Booked per Day\", \"col\": 12}}, {\"id\": \"fs-09\", \"type\": \"header\", \"data\": {\"text\": \"<span class=\\\"h4\\\"><b>Quick actions</b></span>\", \"col\": 12}}, {\"id\": \"fs-10\", \"type\": \"shortcut\", \"data\": {\"shortcut_name\": \"New Job\", \"col\": 4}}, {\"id\": \"fs-11\", \"type\": \"shortcut\", \"data\": {\"shortcut_name\": \"All Jobs\", \"col\": 4}}, {\"id\": \"fs-12\", \"type\": \"shortcut\", \"data\": {\"shortcut_name\": \"Unassigned\", \"col\": 4}}, {\"id\": \"fs-13\", \"type\": \"shortcut\", \"data\": {\"shortcut_name\": \"Today's Visits\", \"col\": 4}}, {\"id\": \"fs-14\", \"type\": \"shortcut\", \"data\": {\"shortcut_name\": \"Job Board\", \"col\": 4}}, {\"id\": \"fs-15\", \"type\": \"shortcut\", \"data\": {\"shortcut_name\": \"Calendar\", \"col\": 4}}, {\"id\": \"fs-16\", \"type\": \"chart\", \"data\": {\"chart_name\": \"Jobs by Status\", \"col\": 12}}, {\"id\": \"fs-17\", \"type\": \"chart\", \"data\": {\"chart_name\": \"Open Jobs per Technician\", \"col\": 12}}, {\"id\": \"fs-18\", \"type\": \"header\", \"data\": {\"text\": \"<span class=\\\"h4\\\"><b>Records and settings</b></span>\", \"col\": 12}}, {\"id\": \"fs-19\", \"type\": \"card\", \"data\": {\"card_name\": \"Field Work\", \"col\": 4}}, {\"id\": \"fs-20\", \"type\": \"card\", \"data\": {\"card_name\": \"Customers and Billing\", \"col\": 4}}, {\"id\": \"fs-21\", \"type\": \"card\", \"data\": {\"card_name\": \"Reports and Settings\", \"col\": 4}}]",
  "creation": "2026-11-05 10:33:14.523136",
  "custom_blocks": [],
  "docstatus": 0,
@@ -126,7 +126,7 @@
    "type": "Link"
   }
  ],
- "modified": "2026-11-05 10:40:25.600519",
+ "modified": "2026-11-05 12:15:13.981987",
  "modified_by": "Administrator",
  "module": "Fieldpro",
  "name": "Field Service",
@@ -169,6 +169,12 @@
  ],
  "sequence_id": 30.0,
  "shortcuts": [
+  {
+   "color": "Green",
+   "label": "Open Manager App",
+   "type": "URL",
+   "url": "/manage"
+  },
   {
    "doc_view": "New",
    "label": "New Job",

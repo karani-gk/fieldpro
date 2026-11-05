@@ -96,4 +96,9 @@ update_website_context = ["fieldpro.activation_hooks.redirect_login_page"]
 # The manager's Vue app owns every path under /manage (www/manage.py serves it).
 website_route_rules = [{"from_route": "/manage/<path:app_path>", "to_route": "manage"}]
 
+# Field managers opening Desk land in the Vue app (services/manager_landing.py). In Desk, the
+# Field Service workspace links back to it ("Open Manager App"). Not the sidebar: a URL item there
+# is visible to every Desk user and would give them all the Field Service icon.
+before_request = ["fieldpro.landing_hooks.send_managers_to_app"]
+
 jinja = {"methods": ["fieldpro.jinja.image_data_url", "fieldpro.jinja.company_name"]}

@@ -4,6 +4,8 @@ import ToastHost from "./components/ToastHost.vue";
 import { initials } from "./lib/format.js";
 import { boot } from "./lib/server.js";
 
+const DESK_URL = "/desk/field-service?desk=1";
+
 const NAV = [
 	{ to: "/", label: "Dashboard", icon: "home", exact: true },
 	{ to: "/board", label: "Job board", icon: "board" },
@@ -42,9 +44,10 @@ const NAV = [
 			</nav>
 
 			<div class="foot">
-				<a href="/app/field-service" class="nav-item subtle">
+				<!-- ?desk=1 keeps this manager in Desk until they open /manage again (manager_landing.py). -->
+				<a :href="DESK_URL" class="nav-item subtle" title="Use ERPNext Desk until you come back here">
 					<AppIcon name="external" />
-					<span>Open in Desk</span>
+					<span>Switch to Desk</span>
 				</a>
 				<div class="me">
 					<span class="avatar">{{ initials(boot.full_name) }}</span>

@@ -104,7 +104,7 @@ next to it.
 |---|---|---|
 | Technician (Achieng, Otieno, Wanjiru) | technician app `/tech` | `achieng@fieldpro.test` or `0700 100001` (`…002`, `…003`) with the password, or a one-time code |
 | Customer (Wanjiku Clinic and two more) | customer portal `/portal` | `clinic@fieldpro.test`, `apartments@fieldpro.test`, `supermarket@fieldpro.test` |
-| Manager | The Vue app at `/manage`, or in Desk the **Field Service** icon (`/app/field-service`) | `manager@fieldpro.test` |
+| Manager | The Vue app at `/manage` (Desk sends field managers there; **Switch to Desk** in the app goes back) | `manager@fieldpro.test` |
 
 On a local machine nothing is sent: with no outgoing Email Account or SMS gateway, the sign-in
 code is saved in Desk under **SMS Log**. On a real site, **Fieldpro Settings > Send Sign-in Codes

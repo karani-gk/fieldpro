@@ -8,6 +8,7 @@ import os
 import tempfile
 
 import frappe
+from frappe.auth import CookieManager
 from frappe.desk.doctype.number_card.number_card import get_result
 from frappe.utils import add_days, today
 
@@ -215,6 +216,9 @@ class TestTeamAndCustomers(ManageTestCase):
 
 class TestPage(ManageTestCase):
 	def context_for(self, user: str):
+		# A real request always has a cookie manager; the page clears the Desk choice with it.
+		frappe.local.cookie_manager = CookieManager()
+
 		def build():
 			context = frappe._dict()
 			page.get_context(context)

@@ -66,6 +66,12 @@ class AppSettings:
 		return self._password("inbound_webhook_secret")
 
 	@property
+	def open_manager_app(self) -> bool:
+		"""Send field managers from Desk to the Vue app. The setting is worded "keep them in Desk"
+		so that blank (any site migrated from before it, where a Single's Check reads 0) means on."""
+		return not self.doc.get("keep_managers_in_desk")
+
+	@property
 	def sign_in_code_channel(self) -> str:
 		"""Email or SMS. A site migrated from before this setting has it blank, so Email."""
 		return self.doc.get("sign_in_code_channel") or DEFAULT_SIGN_IN_CODE_CHANNEL

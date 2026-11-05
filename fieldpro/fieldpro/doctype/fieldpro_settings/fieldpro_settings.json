@@ -21,6 +21,8 @@
   "inbound_webhook_secret",
   "section_sign_in",
   "sign_in_code_channel",
+  "section_manager_app",
+  "keep_managers_in_desk",
   "section_activation",
   "activated_for",
   "activated_on",
@@ -122,6 +124,18 @@
    "description": "Email reaches technicians in any country with no gateway to pay for. SMS uses the gateway in SMS Settings."
   },
   {
+   "fieldname": "section_manager_app",
+   "fieldtype": "Section Break",
+   "label": "Manager App"
+  },
+  {
+   "default": "0",
+   "description": "Unticked, field managers who open Desk land in the manager app at /manage (they can still choose Desk from the app). Tick to leave them in Desk. System Managers are never redirected.",
+   "fieldname": "keep_managers_in_desk",
+   "fieldtype": "Check",
+   "label": "Keep Field Managers in Desk"
+  },
+  {
    "fieldname": "section_activation",
    "fieldtype": "Section Break",
    "label": "Activation",
@@ -151,7 +165,7 @@
  "istable": 0,
  "issingle": 1,
  "links": [],
- "modified": "2026-11-04 16:00:00.000000",
+ "modified": "2026-11-05 12:10:36.175766",
  "modified_by": "Administrator",
  "module": "Fieldpro",
  "name": "Fieldpro Settings",

@@ -12,6 +12,7 @@ import frappe
 from frappe import _
 
 from fieldpro.access import AccessProfile
+from fieldpro.services.manager_landing import DESK_CHOICE_COOKIE
 from fieldpro.settings import AppSettings
 
 no_cache = 1
@@ -28,6 +29,8 @@ def get_context(context):
 		raise frappe.Redirect(302)
 	if not AccessProfile().is_manager:
 		raise frappe.PermissionError(_("This is for field service managers."))
+	# Back in the app: Desk pages it replaces send this manager here again (manager_landing.py).
+	frappe.local.cookie_manager.delete_cookie(DESK_CHOICE_COOKIE)
 	context.title = _("Field Service")
 	context.csrf_token = frappe.sessions.get_csrf_token()
 	# "<" escaped, so a name containing </script> cannot end the inline script early.

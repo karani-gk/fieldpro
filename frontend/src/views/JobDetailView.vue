@@ -287,7 +287,7 @@ async function saveEdit() {
 
 					<section class="card section links">
 						<a :href="pdfUrl" target="_blank" rel="noopener"><AppIcon name="file" :size="16" /> Job card PDF</a>
-						<a :href="`/app/service-job/${job.id}`"><AppIcon name="external" :size="16" /> Open in Desk</a>
+						<a :href="`/desk/service-job/${encodeURIComponent(job.id)}?desk=1`"><AppIcon name="external" :size="16" /> Open in Desk</a>
 					</section>
 				</aside>
 			</div>

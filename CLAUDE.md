@@ -81,3 +81,17 @@ endpoints stay thin, rules live in `fieldpro/services/`, and comments explain wh
 - Field Manager alone cannot read Customer; the booking picker uses `get_all` behind ManagerOnly.
 - Dashboard counts come from the workspace's Number Cards (`get_result` with the card's own
   `filters_json`): change a card in Desk and both screens follow.
+- Field managers opening a Desk page the app replaces (home, Field Service workspace, Service Job
+  list/board/form, Technician list) are redirected to /manage by a `before_request` hook
+  (`landing_hooks.py`, rules in `services/manager_landing.py`). `?desk=1` on a Desk URL sets a
+  browser-session cookie that stops it ("Switch to Desk"); opening /manage clears it. System
+  Managers and Administrator are never redirected. Setting: Fieldpro Settings "Keep Field Managers
+  in Desk" (worded so blank means on: a Single's Check that was never saved reads 0, not its default).
+- `frappe.Redirect` is only handled while a web page renders; in `before_request` raise a werkzeug
+  `HTTPException(response=redirect(url, 302))`.
+- Never put a URL item in the Field Service Workspace Sidebar: every Desk user can see it, so all
+  of them get the Field Service icon (test_desk catches it). The way back lives in the workspace.
+  Desk opens URL shortcuts in a new tab. Frappe's apps screen (`add_to_apps_screen`) shows nothing
+  in v16 Desk for these users, so it is not used.
+- Migrate only syncs a standard file whose `modified` is newer than the DB copy. To undo a change
+  after migrating it, reload by absolute path with `import_file_by_path(path, force=True)`.
