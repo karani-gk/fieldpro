@@ -12,7 +12,7 @@ from fieldpro.api.pagination import Page, fetch_page
 from fieldpro.services.job_flow import JobFlow
 from fieldpro.services.job_rules import CLOSED_STATES
 
-SCOPES = ("today", "open", "all")
+SCOPES = ("today", "open", "all", "finished")
 
 
 class JobService:
@@ -22,7 +22,8 @@ class JobService:
 
 	def technician_jobs(self, scope: str = "today", cursor: str | None = None, limit: int = 20) -> Page:
 		"""Today: open jobs scheduled today or earlier (overdue ones stay on the list).
-		Open: every open job. All: everything assigned to the technician."""
+		Open: every open job. All: everything assigned to the technician.
+		Finished: Done and Cancelled jobs, most recently changed first (the technician's history)."""
 		if scope not in SCOPES:
 			raise Invalid(
 				_("scope must be one of {0}.").format(", ".join(SCOPES)), fields={"scope": "invalid"}
@@ -36,6 +37,18 @@ class JobService:
 			filters.append(["Service Job", "workflow_state", "not in", list(CLOSED_STATES)])
 		if scope == "today":
 			filters.append(["Service Job", "scheduled_date", "<=", today()])
+		if scope == "finished":
+			filters.append(["Service Job", "workflow_state", "in", list(CLOSED_STATES)])
+			# By last change, not date: a finished job may have no date, and a cursor needs a value.
+			return fetch_page(
+				"Service Job",
+				fields=shapes.JOB_LIST_FIELDS,
+				sort_field="modified",
+				descending=True,
+				filters=filters,
+				cursor=cursor,
+				limit=limit,
+			)
 		return fetch_page(
 			"Service Job",
 			fields=shapes.JOB_LIST_FIELDS,

@@ -8,7 +8,7 @@ from fieldpro.services.jobs import JobService
 
 @api(methods=["GET"])
 def list_jobs(scope: str = "today", cursor: str | None = None, limit: int | None = None):
-	"""The technician's jobs. scope: today (default, includes overdue), open or all."""
+	"""The technician's jobs. scope: today (default, includes overdue), open, all or finished."""
 	page = JobService().technician_jobs(scope=scope, cursor=cursor, limit=page_size(limit))
 	return ok(
 		[shapes.job_summary(r) for r in page.rows], next_cursor=page.next_cursor, has_more=page.has_more

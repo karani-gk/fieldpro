@@ -47,7 +47,7 @@ they may be.
 | `auth.verify_otp` `mobile_no, code` | POST | anyone | returns `token` (`key:secret`), user and technician |
 | `auth.session` | GET | signed in | who am I, my kind, my customers, the CSRF token (cookie sessions) |
 | `auth.sign_out_device` | POST | technician | revokes the token on every device |
-| `jobs.list_jobs` `scope=today\|open\|all, cursor, limit` | GET | technician | my jobs |
+| `jobs.list_jobs` `scope=today\|open\|all\|finished, cursor, limit` | GET | technician | my jobs |
 | `jobs.get_job` `job` | GET | anyone who may see it | job with visits, parts, photos and `actions` |
 | `visits.start_visit` `job, client_id?, started_at?` | POST | technician | starts a visit; the first one moves the job to In Progress |
 | `visits.end_visit` `visit, ended_at?, notes?` | POST | technician | |
