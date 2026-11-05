@@ -101,5 +101,9 @@ website_route_rules = [{"from_route": "/manage/<path:app_path>", "to_route": "ma
 # Field Service workspace links back to it ("Open Manager App"). Not the sidebar: a URL item there
 # is visible to every Desk user and would give them all the Field Service icon.
 before_request = ["fieldpro.landing_hooks.send_managers_to_app"]
+# Inside Desk's single-page app no request reaches before_request: opening the Field Service
+# workspace there is caught in the browser instead (public/js/manager_app.js).
+boot_session = ["fieldpro.landing_hooks.add_manager_app_to_boot"]
+app_include_js = ["/assets/fieldpro/js/manager_app.js"]
 
 jinja = {"methods": ["fieldpro.jinja.image_data_url", "fieldpro.jinja.company_name"]}

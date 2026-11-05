@@ -46,7 +46,9 @@ function onBooked(job) {
 	router.push(`/jobs/${job.id}`);
 }
 
-const DESK_URL = "/desk/field-service?desk=1";
+// The Desk home, not the Field Service workspace: for field managers that workspace opens the
+// manager app (public/js/manager_app.js), so landing there would bounce straight back.
+const DESK_URL = "/desk?desk=1";
 
 const NAV = [
 	{ to: "/", label: "Dashboard", icon: "home", exact: true },

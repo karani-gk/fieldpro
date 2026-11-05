@@ -125,3 +125,23 @@ class TestDeskChoiceEndsWithTheSession(FieldproTestCase):
 			self.assertIn(DESK_CHOICE_COOKIE, frappe.local.cookie_manager.to_delete)
 		finally:
 			frappe.local.cookie_manager = previous
+
+
+class TestFieldServiceIconOpensTheApp(FieldproTestCase):
+	"""Desk opens the Field Service workspace in the browser, so the boot tells it who goes to /manage."""
+
+	def boot_for(self, user: str) -> frappe._dict:
+		bootinfo = frappe._dict()
+		factories.as_user(user, lambda: landing_hooks.add_manager_app_to_boot(bootinfo))
+		return bootinfo
+
+	def test_a_field_manager_is_sent_to_the_app(self):
+		self.assertIn("fieldpro.landing_hooks.add_manager_app_to_boot", frappe.get_hooks("boot_session"))
+		self.assertIn("/assets/fieldpro/js/manager_app.js", frappe.get_hooks("app_include_js"))
+		self.assertEqual(self.boot_for(self.manager).fieldpro_manager_app, "/manage")
+
+	def test_everyone_else_opens_the_workspace(self):
+		system_manager = factories.user(["Field Manager", "System Manager"], website=False)
+		accountant = factories.user(["Accounts User"], website=False)
+		for user in ("Administrator", system_manager, accountant):
+			self.assertNotIn("fieldpro_manager_app", self.boot_for(user), user)

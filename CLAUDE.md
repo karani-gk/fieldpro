@@ -100,3 +100,9 @@ endpoints stay thin, rules live in `fieldpro/services/`, and comments explain wh
   animation, so close it through the `close` slot prop or `modal.close()` (template ref), never by
   unmounting it with v-if directly, or the closing animation is skipped. /manage/jobs/new opens
   the New job dialog over the list (Desk's new Service Job redirects there).
+- Desk opens a workspace (home icon, sidebar, search) inside its single-page app: no request
+  reaches before_request. For field managers `public/js/manager_app.js` (app_include_js, a plain
+  file, no bundle) sends the Field Service workspace route to /manage, told who by the boot
+  (`boot_session` -> `fieldpro_manager_app`). The boot is cached per user: `clear-cache` after
+  changing the rule. "Switch to Desk" therefore lands on the Desk home, not that workspace. An
+  "External" Desktop Icon would also work but Desk opens it in a new tab.

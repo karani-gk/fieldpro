@@ -33,3 +33,10 @@ def forget_desk_choice(login_manager=None):
 	"""on_login, on_logout: choosing Desk lasts one sign-in. The cookie is a browser-session one,
 	so without this a manager who chose Desk, signed out and signed in again stayed in Desk."""
 	frappe.local.cookie_manager.delete_cookie(DESK_CHOICE_COOKIE)
+
+
+def add_manager_app_to_boot(bootinfo):
+	"""boot_session: tell Desk (public/js/manager_app.js) to open Field Service in the manager app
+	for this user. Field managers only, by the same rule as the redirect; never set otherwise."""
+	if ManagerLanding().applies():
+		bootinfo.fieldpro_manager_app = "/manage"
