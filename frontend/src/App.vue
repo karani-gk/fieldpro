@@ -1,8 +1,50 @@
 <script setup>
+import { onBeforeUnmount, onMounted, ref } from "vue";
+import { useRouter } from "vue-router";
 import AppIcon from "./components/AppIcon.vue";
+import NewJobDialog from "./components/NewJobDialog.vue";
 import ToastHost from "./components/ToastHost.vue";
+import { dialogs, openNewJob } from "./lib/dialogs.js";
 import { initials } from "./lib/format.js";
-import { boot } from "./lib/server.js";
+import { api, boot } from "./lib/server.js";
+import { notify } from "./lib/toast.js";
+
+const router = useRouter();
+const menuOpen = ref(false);
+const menu = ref(null);
+const signingOut = ref(false);
+
+// The account menu closes on a click anywhere else, or Escape.
+function onDocumentClick(event) {
+	if (menu.value && !menu.value.contains(event.target)) menuOpen.value = false;
+}
+function onKey(event) {
+	if (event.key === "Escape") menuOpen.value = false;
+}
+onMounted(() => {
+	document.addEventListener("click", onDocumentClick);
+	document.addEventListener("keydown", onKey);
+});
+onBeforeUnmount(() => {
+	document.removeEventListener("click", onDocumentClick);
+	document.removeEventListener("keydown", onKey);
+});
+
+async function signOut() {
+	signingOut.value = true;
+	try {
+		await api.signOut();
+		window.location.href = "/login";
+	} catch (exc) {
+		signingOut.value = false;
+		notify(exc.message, "error");
+	}
+}
+
+function onBooked(job) {
+	dialogs.newJob = false;
+	router.push(`/jobs/${job.id}`);
+}
 
 const DESK_URL = "/desk/field-service?desk=1";
 
@@ -25,9 +67,9 @@ const NAV = [
 				</span>
 			</RouterLink>
 
-			<RouterLink to="/jobs/new" class="btn btn-primary new-job">
+			<button class="btn btn-primary new-job" @click="openNewJob">
 				<AppIcon name="plus" :size="16" /> New job
-			</RouterLink>
+			</button>
 
 			<nav>
 				<RouterLink
@@ -43,25 +85,43 @@ const NAV = [
 				</RouterLink>
 			</nav>
 
-			<div class="foot">
-				<!-- ?desk=1 keeps this manager in Desk until they open /manage again (manager_landing.py). -->
-				<a :href="DESK_URL" class="nav-item subtle" title="Use ERPNext Desk until you come back here">
-					<AppIcon name="external" />
-					<span>Switch to Desk</span>
-				</a>
-				<div class="me">
+			<div ref="menu" class="foot">
+				<Transition name="pop">
+					<div v-if="menuOpen" class="account-menu" role="menu">
+						<div class="menu-who">
+							<strong>{{ boot.full_name }}</strong>
+							<small>{{ boot.user }}</small>
+						</div>
+						<!-- ?desk=1 keeps this manager in Desk until they open /manage again (manager_landing.py). -->
+						<a :href="DESK_URL" class="menu-item" role="menuitem">
+							<AppIcon name="external" :size="16" /> Switch to Desk
+						</a>
+						<button class="menu-item danger" role="menuitem" :disabled="signingOut" @click="signOut">
+							<AppIcon name="logout" :size="16" /> {{ signingOut ? "Signing out…" : "Sign out" }}
+						</button>
+					</div>
+				</Transition>
+				<button
+					class="me"
+					:aria-expanded="menuOpen"
+					aria-haspopup="menu"
+					title="Your account"
+					@click="menuOpen = !menuOpen"
+				>
 					<span class="avatar">{{ initials(boot.full_name) }}</span>
 					<span class="who">
 						<strong>{{ boot.full_name }}</strong>
 						<small>{{ boot.user }}</small>
 					</span>
-				</div>
+					<AppIcon name="chevron" :size="16" class="chevron" />
+				</button>
 			</div>
 		</aside>
 
 		<main class="main">
 			<RouterView />
 		</main>
+		<NewJobDialog v-if="dialogs.newJob" @close="dialogs.newJob = false" @booked="onBooked" />
 		<ToastHost />
 	</div>
 </template>
@@ -157,24 +217,112 @@ nav {
 	box-shadow: inset 3px 0 0 var(--mint);
 }
 
-.nav-item.subtle {
-	font-size: 13px;
-	color: #9fb8b0;
-}
-
 .foot {
+	position: relative;
 	margin-top: auto;
-	display: flex;
-	flex-direction: column;
-	gap: 10px;
+	padding-top: 10px;
+	border-top: 1px solid var(--ink-soft);
 }
 
 .me {
 	display: flex;
 	align-items: center;
 	gap: 10px;
-	padding: 10px 6px 0;
-	border-top: 1px solid var(--ink-soft);
+	width: 100%;
+	padding: 8px 6px;
+	border: 0;
+	border-radius: var(--radius-sm);
+	background: none;
+	color: inherit;
+	font: inherit;
+	text-align: left;
+	cursor: pointer;
+}
+
+.me:hover,
+.me[aria-expanded="true"] {
+	background: var(--ink-soft);
+}
+
+.chevron {
+	margin-left: auto;
+	flex: none;
+	color: #9fb8b0;
+	transform: rotate(-90deg);
+}
+
+.account-menu {
+	position: absolute;
+	left: 0;
+	right: 0;
+	bottom: calc(100% + 6px);
+	z-index: 40;
+	padding: 6px;
+	border: 1px solid var(--border);
+	border-radius: var(--radius);
+	background: var(--surface);
+	color: var(--text);
+	box-shadow: var(--shadow-lift);
+}
+
+.menu-who {
+	padding: 8px 10px 10px;
+	margin-bottom: 4px;
+	border-bottom: 1px solid var(--border);
+}
+
+.menu-who strong,
+.menu-who small {
+	display: block;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+.menu-who small {
+	color: var(--text-muted);
+}
+
+.menu-item {
+	display: flex;
+	align-items: center;
+	gap: 10px;
+	width: 100%;
+	padding: 8px 10px;
+	border: 0;
+	border-radius: var(--radius-sm);
+	background: none;
+	color: var(--text);
+	font: inherit;
+	font-weight: 500;
+	text-align: left;
+	cursor: pointer;
+}
+
+.menu-item:hover {
+	background: var(--surface-muted);
+	text-decoration: none;
+}
+
+.menu-item.danger {
+	color: var(--danger);
+}
+
+.menu-item.danger:hover {
+	background: var(--danger-soft);
+}
+
+.pop-enter-active,
+.pop-leave-active {
+	transition:
+		opacity 0.16s ease,
+		transform 0.16s ease;
+}
+
+.pop-enter-from,
+.pop-leave-to {
+	opacity: 0;
+	transform: translateY(6px);
 }
 
 .avatar {
@@ -243,8 +391,29 @@ nav {
 		margin-left: auto;
 	}
 
+	/* On a phone the account menu is the avatar in the top bar, opening downwards. */
 	.foot {
+		margin: 0;
+		padding: 0;
+		border: 0;
+	}
+
+	.me {
+		padding: 2px;
+		border-radius: 50%;
+	}
+
+	.who,
+	.chevron {
 		display: none;
+	}
+
+	.account-menu {
+		left: auto;
+		right: 0;
+		top: calc(100% + 6px);
+		bottom: auto;
+		width: 240px;
 	}
 }
 </style>

@@ -37,6 +37,14 @@ export class ApiClient {
 		});
 	}
 
+	/** End the session with Frappe's own logout: the manager is signed out of Desk too. */
+	async signOut() {
+		return this.send("/api/method/logout", {
+			method: "POST",
+			headers: { "X-Frappe-CSRF-Token": this.csrfToken() },
+		});
+	}
+
 	/** The whole body ({data, next_cursor, has_more}), or an ApiError. */
 	async send(url, init) {
 		let response;

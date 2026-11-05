@@ -22,6 +22,13 @@ describe("ApiClient", () => {
 		expect(JSON.parse(init.body)).toEqual({ job: "J1" });
 	});
 
+	it("signs out through Frappe's logout with the CSRF token", async () => {
+		const fetch = reply(200, {});
+		await new ApiClient({ fetch, csrfToken: () => "tok" }).signOut();
+		const [url, init] = fetch.mock.calls[0];
+		expect([url, init.method, init.headers["X-Frappe-CSRF-Token"]]).toEqual(["/api/method/logout", "POST", "tok"]);
+	});
+
 	it("turns the error format into an ApiError", async () => {
 		const fetch = reply(422, { error: { code: "invalid", message: "Pick a date", fields: { scheduled_date: "x" } } });
 		const error = await new ApiClient({ fetch }).post("manage.assign").catch((e) => e);

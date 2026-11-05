@@ -95,3 +95,7 @@ endpoints stay thin, rules live in `fieldpro/services/`, and comments explain wh
   in v16 Desk for these users, so it is not used.
 - Migrate only syncs a standard file whose `modified` is newer than the DB copy. To undo a change
   after migrating it, reload by absolute path with `import_file_by_path(path, force=True)`.
+- Forms in the manager app are dialogs (`BaseModal`): it emits `close` only after its leave
+  animation, so close it through the `close` slot prop or `modal.close()` (template ref), never by
+  unmounting it with v-if directly, or the closing animation is skipped. /manage/jobs/new opens
+  the New job dialog over the list (Desk's new Service Job redirects there).

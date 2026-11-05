@@ -187,9 +187,12 @@ textarea.input {
 	box-shadow: var(--shadow);
 }
 
+/* Pages grow with the screen up to a comfortable reading width, centred, so a wide monitor has
+   no empty band on one side; the side padding grows a little with the screen too. */
 .page {
-	padding: 28px 32px 48px;
-	max-width: 1280px;
+	padding: 28px clamp(20px, 3vw, 48px) 48px;
+	max-width: 1600px;
+	margin: 0 auto;
 }
 
 .page-wide {

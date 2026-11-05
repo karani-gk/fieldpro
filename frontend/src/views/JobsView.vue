@@ -6,6 +6,7 @@ import { useRoute, useRouter } from "vue-router";
 import AppIcon from "../components/AppIcon.vue";
 import StatusBadge from "../components/StatusBadge.vue";
 import { dayLabel, initials, isOverdue } from "../lib/format.js";
+import { openNewJob } from "../lib/dialogs.js";
 import { api } from "../lib/server.js";
 
 // The workflow's states (fixtures/workflow.json). A wrong name here only filters to nothing.
@@ -101,7 +102,7 @@ onMounted(async () => {
 				<h1>Jobs</h1>
 				<p>Every service job, newest first.</p>
 			</div>
-			<RouterLink to="/jobs/new" class="btn btn-primary"><AppIcon name="plus" :size="16" /> New job</RouterLink>
+			<button class="btn btn-primary" @click="openNewJob"><AppIcon name="plus" :size="16" /> New job</button>
 		</div>
 
 		<div class="filters card">

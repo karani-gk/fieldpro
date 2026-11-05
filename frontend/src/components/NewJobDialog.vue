@@ -2,12 +2,12 @@
 // Book a job for a customer who called in. Choosing a technician now assigns it straight away;
 // leaving it empty puts the job in "Needs a technician" on the dashboard.
 import { onMounted, ref, watch } from "vue";
-import { useRouter } from "vue-router";
 import { isoDay } from "../lib/format.js";
 import { api } from "../lib/server.js";
 import { notify } from "../lib/toast.js";
+import BaseModal from "./BaseModal.vue";
 
-const router = useRouter();
+const emit = defineEmits(["close", "booked"]);
 
 const form = ref({
 	customer: "",
@@ -24,6 +24,8 @@ const showCustomers = ref(false);
 const technicians = ref([]);
 const saving = ref(false);
 const error = ref(null);
+const modal = ref(null);
+let booked = null; // the new job, handed over once the dialog has animated out
 
 // Search customers as the manager types, after a short pause.
 let timer = null;
@@ -60,7 +62,8 @@ async function submit() {
 	try {
 		const { data } = await api.post("manage.book_job", form.value);
 		notify(`${data.id} booked${data.technician ? ` and assigned to ${data.technician.name}` : ""}`);
-		router.push(`/jobs/${data.id}`);
+		booked = data;
+		modal.value.close();
 	} catch (exc) {
 		error.value = exc;
 	} finally {
@@ -79,15 +82,10 @@ onMounted(async () => {
 </script>
 
 <template>
-	<div class="page narrow">
-		<div class="page-head">
-			<div>
-				<h1>New job</h1>
-				<p>Book work for a customer who called in.</p>
-			</div>
-		</div>
+	<BaseModal ref="modal" title="New job" wide @close="booked ? emit('booked', booked) : emit('close')">
+		<form id="new-job-form" class="form" @submit.prevent="submit">
+			<p class="muted wide intro">Book work for a customer who called in.</p>
 
-		<form class="card form" @submit.prevent="submit">
 			<div class="field wide picker">
 				<label for="customer">Customer</label>
 				<input
@@ -145,31 +143,34 @@ onMounted(async () => {
 			</div>
 
 			<div v-if="error" class="error-banner wide">{{ error.message }}</div>
-
-			<div class="buttons wide">
-				<RouterLink to="/jobs" class="btn">Cancel</RouterLink>
-				<button type="submit" class="btn btn-primary" :disabled="saving || !form.customer">
-					{{ saving ? "Booking…" : form.technician ? "Book and assign" : "Book job" }}
-				</button>
-			</div>
 		</form>
-	</div>
+
+		<template #footer="{ close }">
+			<button type="button" class="btn" @click="close">Cancel</button>
+			<button type="submit" form="new-job-form" class="btn btn-primary" :disabled="saving || !form.customer">
+				{{ saving ? "Booking…" : form.technician ? "Book and assign" : "Book job" }}
+			</button>
+		</template>
+	</BaseModal>
 </template>
 
 <style scoped>
-.narrow {
-	max-width: 760px;
-}
-
 .form {
 	display: grid;
 	grid-template-columns: 1fr 1fr;
 	gap: 16px 20px;
-	padding: 22px;
 }
 
 .wide {
 	grid-column: 1 / -1;
+}
+
+.intro {
+	margin: -6px 0 0;
+}
+
+.error-banner {
+	margin: 0;
 }
 
 .picker {
@@ -201,16 +202,6 @@ onMounted(async () => {
 
 .suggestions li:hover {
 	background: var(--mint-soft);
-}
-
-.buttons {
-	display: flex;
-	justify-content: flex-end;
-	gap: 8px;
-}
-
-.buttons .btn:hover {
-	text-decoration: none;
 }
 
 @media (max-width: 600px) {

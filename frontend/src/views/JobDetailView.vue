@@ -6,6 +6,7 @@ import { computed, ref, watch } from "vue";
 import AppIcon from "../components/AppIcon.vue";
 import AssignDialog from "../components/AssignDialog.vue";
 import BaseModal from "../components/BaseModal.vue";
+import EditJobDialog from "../components/EditJobDialog.vue";
 import StatusBadge from "../components/StatusBadge.vue";
 import { dateTime, dayLabel, initials, isOverdue, money } from "../lib/format.js";
 import { api } from "../lib/server.js";
@@ -19,16 +20,14 @@ const ACTION_LOOK = {
 	"Send Back": { label: "Send back", kind: "", icon: "back" },
 	Cancel: { label: "Cancel job", kind: "btn-danger", icon: "x" },
 };
-const PRIORITIES = ["Urgent", "Normal", "Low"];
 
 const job = ref(null);
 const error = ref(null);
 const busy = ref(false);
 const assigning = ref(false);
 const confirming = ref(null); // the action waiting for "Are you sure?"
+const confirmed = ref(null); // set when the manager said yes; acted on once the dialog has closed
 const editing = ref(false);
-const form = ref({});
-const formError = ref(null);
 
 // Assign has its own dialog; the rest of the server's actions become buttons.
 const actionButtons = computed(() => (job.value?.actions || []).filter((a) => a.action !== "Assign"));
@@ -49,7 +48,6 @@ async function load() {
 watch(() => props.id, load, { immediate: true });
 
 async function act(action) {
-	confirming.value = null;
 	busy.value = true;
 	try {
 		job.value = (await api.post("manage.act", { job: props.id, action })).data;
@@ -59,6 +57,13 @@ async function act(action) {
 	} finally {
 		busy.value = false;
 	}
+}
+
+function onConfirmClosed() {
+	const action = confirmed.value;
+	confirming.value = null;
+	confirmed.value = null;
+	if (action) act(action);
 }
 
 function onAction(action) {
@@ -72,35 +77,10 @@ function onAssigned(updated) {
 	notify(`Assigned to ${updated.technician.name}`);
 }
 
-function startEdit() {
-	const j = job.value;
-	form.value = {
-		issue: j.issue,
-		description: j.description,
-		priority: j.priority,
-		scheduled_date: j.scheduled_date || "",
-		site_address: j.site_address,
-		contact_phone: j.contact_phone,
-		estimated_value: j.estimated_value_raw,
-	};
-	formError.value = null;
-	editing.value = true;
-}
-
-async function saveEdit() {
-	busy.value = true;
-	formError.value = null;
-	try {
-		// An emptied date input gives "", which the server should store as no date.
-		const changes = { ...form.value, scheduled_date: form.value.scheduled_date || null };
-		job.value = (await api.post("manage.update_job", { job: props.id, changes })).data;
-		editing.value = false;
-		notify("Job updated");
-	} catch (exc) {
-		formError.value = exc;
-	} finally {
-		busy.value = false;
-	}
+function onSaved(updated) {
+	editing.value = false;
+	job.value = updated;
+	notify("Job updated");
 }
 </script>
 
@@ -146,48 +126,10 @@ async function saveEdit() {
 					<section class="card section">
 						<header>
 							<h2>Details</h2>
-							<button v-if="!editing" class="btn btn-sm" @click="startEdit">Edit</button>
+							<button class="btn btn-sm" @click="editing = true">Edit</button>
 						</header>
 
-						<form v-if="editing" class="edit" @submit.prevent="saveEdit">
-							<div class="field wide">
-								<label for="f-issue">Issue</label>
-								<input id="f-issue" v-model="form.issue" class="input" required />
-							</div>
-							<div class="field wide">
-								<label for="f-desc">Description</label>
-								<textarea id="f-desc" v-model="form.description" class="input" />
-							</div>
-							<div class="field">
-								<label for="f-priority">Priority</label>
-								<select id="f-priority" v-model="form.priority" class="select">
-									<option v-for="p in PRIORITIES" :key="p">{{ p }}</option>
-								</select>
-							</div>
-							<div class="field">
-								<label for="f-date">Date</label>
-								<input id="f-date" v-model="form.scheduled_date" class="input" type="date" />
-							</div>
-							<div class="field">
-								<label for="f-phone">Contact phone</label>
-								<input id="f-phone" v-model="form.contact_phone" class="input" type="tel" />
-							</div>
-							<div class="field">
-								<label for="f-value">Estimated value ({{ job.estimated_value.currency }})</label>
-								<input id="f-value" v-model="form.estimated_value" class="input" type="number" min="0" step="0.01" />
-							</div>
-							<div class="field wide">
-								<label for="f-site">Site address</label>
-								<textarea id="f-site" v-model="form.site_address" class="input" rows="2" />
-							</div>
-							<p v-if="formError" class="field-error wide">{{ formError.message }}</p>
-							<div class="edit-buttons wide">
-								<button type="button" class="btn" @click="editing = false">Cancel</button>
-								<button type="submit" class="btn btn-primary" :disabled="busy">Save</button>
-							</div>
-						</form>
-
-						<dl v-else class="facts">
+						<dl class="facts">
 							<div class="wide">
 								<dt>Description</dt>
 								<dd>{{ job.description || "—" }}</dd>
@@ -293,12 +235,13 @@ async function saveEdit() {
 			</div>
 		</template>
 
+		<EditJobDialog v-if="editing" :job="job" @close="editing = false" @saved="onSaved" />
 		<AssignDialog v-if="assigning" :job="job" @close="assigning = false" @assigned="onAssigned" />
-		<BaseModal v-if="confirming" title="Cancel this job?" @close="confirming = null">
+		<BaseModal v-if="confirming" title="Cancel this job?" @close="onConfirmClosed">
 			<p class="muted">The customer and technician will see it as cancelled. This cannot be undone.</p>
-			<template #footer>
-				<button class="btn" @click="confirming = null">Keep job</button>
-				<button class="btn btn-danger" @click="act(confirming)">Cancel job</button>
+			<template #footer="{ close }">
+				<button class="btn" @click="close">Keep job</button>
+				<button class="btn btn-danger" @click="confirmed = confirming; close()">Cancel job</button>
 			</template>
 		</BaseModal>
 	</div>
@@ -411,8 +354,7 @@ async function saveEdit() {
 	font-size: 12px;
 }
 
-.facts,
-.edit {
+.facts {
 	display: grid;
 	grid-template-columns: 1fr 1fr;
 	gap: 14px 20px;
@@ -441,11 +383,6 @@ dd {
 	white-space: pre-line;
 }
 
-.edit-buttons {
-	display: flex;
-	justify-content: flex-end;
-	gap: 8px;
-}
 
 .visits {
 	list-style: none;
@@ -593,8 +530,7 @@ dd {
 }
 
 @media (max-width: 600px) {
-	.facts,
-	.edit {
+	.facts {
 		grid-template-columns: 1fr;
 	}
 }

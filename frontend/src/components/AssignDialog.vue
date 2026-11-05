@@ -14,6 +14,8 @@ const chosen = ref(props.job.technician?.id || "");
 const date = ref(props.job.scheduled_date && props.job.scheduled_date >= isoDay() ? props.job.scheduled_date : isoDay());
 const saving = ref(false);
 const error = ref("");
+const modal = ref(null);
+let saved = null; // the updated job, handed over once the dialog has animated out
 
 const reassigning = computed(() => Boolean(props.job.technician));
 
@@ -34,7 +36,8 @@ async function save() {
 			technician: chosen.value,
 			scheduled_date: date.value,
 		});
-		emit("assigned", data);
+		saved = data;
+		modal.value.close();
 	} catch (exc) {
 		error.value = exc.message;
 	} finally {
@@ -44,7 +47,11 @@ async function save() {
 </script>
 
 <template>
-	<BaseModal :title="reassigning ? 'Reassign job' : 'Assign job'" @close="emit('close')">
+	<BaseModal
+		ref="modal"
+		:title="reassigning ? 'Reassign job' : 'Assign job'"
+		@close="saved ? emit('assigned', saved) : emit('close')"
+	>
 		<p class="muted job">{{ job.id }} · {{ job.issue }} · {{ job.customer.name }}</p>
 		<div class="field">
 			<label>Technician</label>
@@ -70,8 +77,8 @@ async function save() {
 			<input id="assign-date" v-model="date" class="input" type="date" :min="isoDay()" />
 		</div>
 		<p v-if="error" class="field-error">{{ error }}</p>
-		<template #footer>
-			<button class="btn" @click="emit('close')">Cancel</button>
+		<template #footer="{ close }">
+			<button class="btn" @click="close">Cancel</button>
 			<button class="btn btn-primary" :disabled="!chosen || saving" @click="save">
 				{{ saving ? "Saving…" : reassigning ? "Reassign" : "Assign" }}
 			</button>
