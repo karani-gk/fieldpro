@@ -47,6 +47,13 @@ class ManagerLanding:
 		roles = self.profile.roles
 		return FIELD_MANAGER in roles and "System Manager" not in roles
 
+	def field_service_opens_app(self) -> bool:
+		"""Opening Field Service from inside Desk (its icon, sidebar or search) goes to the app for
+		every manager, Administrator and System Managers included: that click asks for Field
+		Service, and the app is Field Service. Unlike applies(), which also moves page loads and
+		sign-ins, this leaves the rest of Desk alone for System Managers."""
+		return self.settings.open_manager_app and self.profile.is_manager
+
 	@staticmethod
 	def target(path: str) -> str | None:
 		"""The /manage screen for a Desk path, or None when the manager app has no such screen."""

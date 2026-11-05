@@ -86,7 +86,8 @@ endpoints stay thin, rules live in `fieldpro/services/`, and comments explain wh
   (`landing_hooks.py`, rules in `services/manager_landing.py`). `?desk=1` on a Desk URL sets a
   browser-session cookie that stops it ("Switch to Desk"); opening /manage, signing in and
   signing out clear it (on_login/on_logout), or the choice outlived the sign-in. System
-  Managers and Administrator are never redirected. Setting: Fieldpro Settings "Keep Field Managers
+  Managers and Administrator are never redirected on page loads or sign-in (only the Field
+  Service icon below). Setting: Fieldpro Settings "Keep Field Managers
   in Desk" (worded so blank means on: a Single's Check that was never saved reads 0, not its default).
 - `frappe.Redirect` is only handled while a web page renders; in `before_request` raise a werkzeug
   `HTTPException(response=redirect(url, 302))`.
@@ -101,8 +102,10 @@ endpoints stay thin, rules live in `fieldpro/services/`, and comments explain wh
   unmounting it with v-if directly, or the closing animation is skipped. /manage/jobs/new opens
   the New job dialog over the list (Desk's new Service Job redirects there).
 - Desk opens a workspace (home icon, sidebar, search) inside its single-page app: no request
-  reaches before_request. For field managers `public/js/manager_app.js` (app_include_js, a plain
-  file, no bundle) sends the Field Service workspace route to /manage, told who by the boot
+  reaches before_request. For every manager (Administrator and System Managers too: owner's
+  choice 2026-11-05, they click Field Service to get the app) `public/js/manager_app.js`
+  (app_include_js, a plain file, no bundle) sends the Field Service workspace route to /manage,
+  except with ?desk=1 (/desk/field-service?desk=1 opens the workspace, e.g. to edit it). Told who by the boot
   (`boot_session` -> `fieldpro_manager_app`). The boot is cached per user: `clear-cache` after
   changing the rule. "Switch to Desk" therefore lands on the Desk home, not that workspace. An
   "External" Desktop Icon would also work but Desk opens it in a new tab.

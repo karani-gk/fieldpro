@@ -37,6 +37,6 @@ def forget_desk_choice(login_manager=None):
 
 def add_manager_app_to_boot(bootinfo):
 	"""boot_session: tell Desk (public/js/manager_app.js) to open Field Service in the manager app
-	for this user. Field managers only, by the same rule as the redirect; never set otherwise."""
-	if ManagerLanding().applies():
+	for this user: any manager (ManagerLanding.field_service_opens_app); never set otherwise."""
+	if ManagerLanding().field_service_opens_app():
 		bootinfo.fieldpro_manager_app = "/manage"

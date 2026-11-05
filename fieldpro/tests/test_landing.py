@@ -135,13 +135,15 @@ class TestFieldServiceIconOpensTheApp(FieldproTestCase):
 		factories.as_user(user, lambda: landing_hooks.add_manager_app_to_boot(bootinfo))
 		return bootinfo
 
-	def test_a_field_manager_is_sent_to_the_app(self):
+	def test_every_manager_is_sent_to_the_app(self):
 		self.assertIn("fieldpro.landing_hooks.add_manager_app_to_boot", frappe.get_hooks("boot_session"))
 		self.assertIn("/assets/fieldpro/js/manager_app.js", frappe.get_hooks("app_include_js"))
-		self.assertEqual(self.boot_for(self.manager).fieldpro_manager_app, "/manage")
+		system_manager = factories.user(["System Manager"], website=False)
+		for user in (self.manager, system_manager, "Administrator"):
+			self.assertEqual(self.boot_for(user).fieldpro_manager_app, "/manage", user)
 
-	def test_everyone_else_opens_the_workspace(self):
-		system_manager = factories.user(["Field Manager", "System Manager"], website=False)
+	def test_other_desk_users_and_the_setting_keep_the_workspace(self):
 		accountant = factories.user(["Accounts User"], website=False)
-		for user in ("Administrator", system_manager, accountant):
-			self.assertNotIn("fieldpro_manager_app", self.boot_for(user), user)
+		self.assertNotIn("fieldpro_manager_app", self.boot_for(accountant))
+		off = AppSettings(frappe._dict(keep_managers_in_desk=1))
+		self.assertFalse(ManagerLanding(AccessProfile(self.manager), off).field_service_opens_app())
