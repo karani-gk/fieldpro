@@ -74,6 +74,9 @@ background jobs all follow the same rules.
 
 ## Quick start
 
+**Everything in one download:** [fieldpro-course](https://github.com/karani-gk/fieldpro-course)
+holds this app, the Next.js app and scripts that set up both. Clone it to start from nothing.
+
 **Requirements:** Frappe and ERPNext v16, Python 3.14, MariaDB, Redis, Node.js 22.6 or newer, and
 [bench](https://github.com/frappe/bench).
 
