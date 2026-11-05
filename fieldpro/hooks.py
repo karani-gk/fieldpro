@@ -90,7 +90,8 @@ scheduler_events = {
 }
 
 # Nobody signs in until the installation is activated with a course access code.
-on_login = ["fieldpro.activation_hooks.refuse_sign_in"]
+on_login = ["fieldpro.activation_hooks.refuse_sign_in", "fieldpro.landing_hooks.forget_desk_choice"]
+on_logout = ["fieldpro.landing_hooks.forget_desk_choice"]
 update_website_context = ["fieldpro.activation_hooks.redirect_login_page"]
 
 # The manager's Vue app owns every path under /manage (www/manage.py serves it).

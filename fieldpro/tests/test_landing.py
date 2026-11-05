@@ -110,3 +110,18 @@ class TestWayBackFromDesk(FieldproTestCase):
 	def test_the_field_service_workspace_links_to_the_app(self):
 		workspace = frappe.get_doc("Workspace", "Field Service")
 		self.assertIn(("URL", "/manage"), [(s.type, s.url) for s in workspace.shortcuts])
+
+
+class TestDeskChoiceEndsWithTheSession(FieldproTestCase):
+	"""Choosing Desk lasts for one sign-in: signing in or out again brings back the app."""
+
+	def test_signing_in_or_out_forgets_the_desk_choice(self):
+		self.assertIn("fieldpro.landing_hooks.forget_desk_choice", frappe.get_hooks("on_login"))
+		self.assertIn("fieldpro.landing_hooks.forget_desk_choice", frappe.get_hooks("on_logout"))
+		previous = getattr(frappe.local, "cookie_manager", None)
+		frappe.local.cookie_manager = CookieManager()
+		try:
+			landing_hooks.forget_desk_choice()
+			self.assertIn(DESK_CHOICE_COOKIE, frappe.local.cookie_manager.to_delete)
+		finally:
+			frappe.local.cookie_manager = previous

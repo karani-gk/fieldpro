@@ -84,7 +84,8 @@ endpoints stay thin, rules live in `fieldpro/services/`, and comments explain wh
 - Field managers opening a Desk page the app replaces (home, Field Service workspace, Service Job
   list/board/form, Technician list) are redirected to /manage by a `before_request` hook
   (`landing_hooks.py`, rules in `services/manager_landing.py`). `?desk=1` on a Desk URL sets a
-  browser-session cookie that stops it ("Switch to Desk"); opening /manage clears it. System
+  browser-session cookie that stops it ("Switch to Desk"); opening /manage, signing in and
+  signing out clear it (on_login/on_logout), or the choice outlived the sign-in. System
   Managers and Administrator are never redirected. Setting: Fieldpro Settings "Keep Field Managers
   in Desk" (worded so blank means on: a Single's Check that was never saved reads 0, not its default).
 - `frappe.Redirect` is only handled while a web page renders; in `before_request` raise a werkzeug

@@ -27,3 +27,9 @@ def send_managers_to_app():
 		return
 	# 302: browsers keep a 301, and the redirect must stop when the manager chooses Desk.
 	raise HTTPException(response=redirect(target, 302))
+
+
+def forget_desk_choice(login_manager=None):
+	"""on_login, on_logout: choosing Desk lasts one sign-in. The cookie is a browser-session one,
+	so without this a manager who chose Desk, signed out and signed in again stayed in Desk."""
+	frappe.local.cookie_manager.delete_cookie(DESK_CHOICE_COOKIE)
