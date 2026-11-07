@@ -6,6 +6,8 @@ its currency (floats lose cents), and nothing internal leaks out. Adding a key i
 clients; renaming or removing one is a new API version.
 """
 
+from urllib.parse import urlencode
+
 from frappe.utils import cstr, flt, getdate
 
 from fieldpro.utils import to_iso
@@ -109,4 +111,22 @@ def manager_job(detail: dict, doc) -> dict:
 		"signature_url": doc.customer_signoff or None,
 		"created_at": to_iso(doc.creation),
 		"last_activity_at": to_iso(doc.last_activity_at),
+	}
+
+
+def invoice_summary(row) -> dict:
+	"""A job's Sales Invoice in the manager app. `status` is ERPNext's (Draft, Unpaid, Overdue,
+	Paid...). The PDF link is Frappe's own print download, so it keeps ERPNext's permission check."""
+	return {
+		"id": row.name,
+		"customer": {"id": row.customer, "name": row.customer_name},
+		"job": row.service_job,
+		"posting_date": date(row.posting_date),
+		"due_date": date(row.due_date),
+		"status": row.status,
+		"is_draft": row.docstatus == 0,
+		"total": money(row.grand_total, row.currency),
+		"outstanding": money(row.outstanding_amount, row.currency),
+		"pdf_url": "/api/method/frappe.utils.print_format.download_pdf?"
+		+ urlencode({"doctype": "Sales Invoice", "name": row.name}),
 	}

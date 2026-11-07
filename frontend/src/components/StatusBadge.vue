@@ -2,8 +2,9 @@
 import { computed } from "vue";
 import { statusTone } from "../lib/format.js";
 
-const props = defineProps({ status: { type: String, required: true } });
-const tone = computed(() => statusTone(props.status));
+// `tone` is for statuses that are not a job's (an invoice's "Overdue"); a job's comes from its status.
+const props = defineProps({ status: { type: String, required: true }, tone: { type: String, default: "" } });
+const tone = computed(() => props.tone || statusTone(props.status));
 </script>
 
 <template>

@@ -112,8 +112,11 @@ class JobQueue(ManagerOnly):
 		search: str | None = None,
 		cursor: str | None = None,
 		limit: int = 20,
+		customer: str | None = None,
 	) -> Page:
 		filters = []
+		if customer:
+			filters.append(["Service Job", "customer", "=", customer])
 		if status:
 			filters.append(["Service Job", "workflow_state", "=", status])
 		if technician:

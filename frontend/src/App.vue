@@ -55,6 +55,9 @@ const NAV = [
 	{ to: "/board", label: "Job board", icon: "board" },
 	{ to: "/jobs", label: "Jobs", icon: "list" },
 	{ to: "/team", label: "Technicians", icon: "team" },
+	{ to: "/customers", label: "Customers", icon: "building" },
+	{ to: "/invoices", label: "Invoices", icon: "receipt" },
+	{ to: "/settings", label: "Settings", icon: "settings" },
 ];
 </script>
 

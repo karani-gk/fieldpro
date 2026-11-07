@@ -109,3 +109,19 @@ endpoints stay thin, rules live in `fieldpro/services/`, and comments explain wh
   (`boot_session` -> `fieldpro_manager_app`). The boot is cached per user: `clear-cache` after
   changing the rule. "Switch to Desk" therefore lands on the Desk home, not that workspace. An
   "External" Desktop Icon would also work but Desk opens it in a new tab.
+
+## Manager app: customers, invoices, settings (2026-11-07)
+
+- Owner asked for settings, invoices "and other things" in the Vue app: added Customers,
+  Invoices and Settings screens over `services/customer_directory.py`, `invoice_desk.py` and
+  `settings_desk.py` (endpoints in `api/v1/manage.py`).
+- Invoices follow ERPNext's permissions, not ManagerOnly alone: a Field Manager without an
+  accounts role (Accounts User) gets a 403 with that reason, and the Customers "Owed" column is
+  null for them. The dashboard's "Done but Not Invoiced" card still opens the Jobs list for
+  that reason. Only invoices with `service_job` set appear or can be submitted from the app.
+- "Draft invoice" calls `InvoiceService.create_for_job` directly (idempotent), the same code the
+  background job runs. Submit asks first: it posts the ledger and takes the van's stock.
+- Settings screen edits only `EDITABLE_SETTINGS`; push key, webhook secrets and activation never
+  leave the server and stay in Desk ("All settings in Desk").
+- Frappe 16 `get_list` refuses SQL functions as strings: write aggregates as
+  `{"COUNT": "name", "as": "count"}`.

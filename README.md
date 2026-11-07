@@ -52,8 +52,10 @@ It is also the code you build, lesson by lesson, in UPEO Academy's course
 - **Webhooks in and out:** signed callbacks from SMS and payment providers; signed deliveries to
   partner systems, with retries.
 - **A manager's app in Vue.js (`/manage`):** a dashboard, a drag-and-drop job board, a job list
-  and job screen (assign, approve, send back, cancel, edit), technician workload and booking by
-  phone. It uses the Desk session and the same rules as Desk.
+  and job screen (assign, approve, send back, cancel, edit), technician workload, booking by
+  phone, customers (open jobs, what they owe, book from the row), invoices (draft, submit, PDF,
+  and finished jobs still waiting for one) and the everyday settings. It uses the Desk session
+  and the same rules as Desk.
 - **Documents and reports:** a Job Card PDF print format and a Technician Performance report.
 
 ## How it fits together
@@ -126,7 +128,7 @@ By** chooses Email (the default) or SMS.
 | `fieldpro/fieldpro/print_format/job_card/` | The Job Card PDF |
 | `fieldpro/fieldpro/report/technician_performance/` | Jobs and hours by technician in Desk |
 | `fieldpro/desktop_icon/`, `workspace_sidebar/`, `fieldpro/workspace/`, `fieldpro/number_card/`, `fieldpro/dashboard_chart/` | The Field Service desk: its icon, sidebar, workspace, number cards and charts, synced on install and migrate. `services/job_board.py` adds the Job Board (Kanban) |
-| `frontend/`, `fieldpro/www/manage.py`, `services/dispatch.py`, `api/v1/manage.py` | The manager's Vue app: Vue 3 + Vite source, the page that serves it at `/manage`, and its API. `bench build` builds it into `fieldpro/public/manage/` |
+| `frontend/`, `fieldpro/www/manage.py`, `services/dispatch.py`, `invoice_desk.py`, `settings_desk.py`, `customer_directory.py`, `api/v1/manage.py` | The manager's Vue app: Vue 3 + Vite source, the page that serves it at `/manage`, and its API. `bench build` builds it into `fieldpro/public/manage/` |
 | `fieldpro/demo.py`, `commands.py` | `bench fieldpro-demo` |
 | `fieldpro/tests/` | Permission, workflow, sync, invoicing, webhook, sign-in and API-contract tests |
 | `docs/` | [API.md](docs/API.md) (the contract), [AUTH.md](docs/AUTH.md) (signing in, per client), `bruno/` (a request collection) |

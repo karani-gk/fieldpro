@@ -17,6 +17,9 @@ export const routes = [
 		},
 	},
 	{ path: "/jobs/:id", name: "job", component: () => import("./views/JobDetailView.vue"), props: true, meta: { title: "Job" } },
+	{ path: "/customers", name: "customers", component: () => import("./views/CustomersView.vue"), meta: { title: "Customers" } },
+	{ path: "/invoices", name: "invoices", component: () => import("./views/InvoicesView.vue"), meta: { title: "Invoices" } },
+	{ path: "/settings", name: "settings", component: () => import("./views/SettingsView.vue"), meta: { title: "Settings" } },
 	{ path: "/team", name: "team", component: () => import("./views/TeamView.vue"), meta: { title: "Technicians" } },
 	{ path: "/:rest(.*)*", redirect: "/" },
 ];

@@ -9,6 +9,7 @@ import frappe
 from fieldpro.api import shapes
 from fieldpro.api.endpoint import api, ok
 from fieldpro.api.pagination import page_size
+from fieldpro.services.customer_directory import CustomerDirectory
 from fieldpro.services.dispatch import (
 	CustomerPicker,
 	Dispatcher,
@@ -16,6 +17,8 @@ from fieldpro.services.dispatch import (
 	JobQueue,
 	TeamLoad,
 )
+from fieldpro.services.invoice_desk import InvoiceDesk
+from fieldpro.services.settings_desk import SettingsDesk
 
 
 @api(methods=["GET"])
@@ -38,6 +41,7 @@ def jobs(
 	q: str | None = None,
 	cursor: str | None = None,
 	limit: int | None = None,
+	customer: str | None = None,
 ):
 	"""Every job, newest first, filtered. q searches the job id, issue, customer and technician."""
 	page = JobQueue().page(
@@ -47,6 +51,7 @@ def jobs(
 		search=q,
 		cursor=cursor,
 		limit=page_size(limit),
+		customer=customer,
 	)
 	return ok(
 		[shapes.job_summary(r) for r in page.rows], next_cursor=page.next_cursor, has_more=page.has_more
@@ -113,3 +118,59 @@ def technicians():
 @api(methods=["GET"])
 def customers(q: str | None = None):
 	return ok(CustomerPicker().search(q))
+
+
+@api(methods=["GET"])
+def customer_directory(q: str | None = None):
+	"""Customers with their open jobs and, for managers who may read invoices, what they owe."""
+	return ok(CustomerDirectory().search(q))
+
+
+@api(methods=["GET"])
+def invoices(
+	status: str | None = None,
+	customer: str | None = None,
+	q: str | None = None,
+	cursor: str | None = None,
+	limit: int | None = None,
+):
+	"""Invoices made from jobs, newest first. status: Draft, Unpaid, Overdue, Paid or Cancelled."""
+	page = InvoiceDesk().page(
+		status=status, customer=customer, search=q, cursor=cursor, limit=page_size(limit)
+	)
+	return ok(
+		[shapes.invoice_summary(r) for r in page.rows], next_cursor=page.next_cursor, has_more=page.has_more
+	)
+
+
+@api(methods=["GET"])
+def invoice_summary():
+	"""Draft, unpaid and overdue totals, and the finished jobs that have no invoice yet."""
+	return ok(InvoiceDesk().summary())
+
+
+@api(methods=["POST"])
+def make_invoice(job: str):
+	"""Make a finished job's draft invoice now, instead of waiting for the background job."""
+	desk = InvoiceDesk()
+	return ok(desk.row(desk.make_for_job(job)))
+
+
+@api(methods=["POST"])
+def submit_invoice(invoice: str):
+	desk = InvoiceDesk()
+	desk.submit(invoice)
+	return ok(desk.row(invoice))
+
+
+@api(methods=["GET"])
+def settings():
+	return ok(SettingsDesk().read())
+
+
+@api(methods=["POST"])
+def update_settings(changes: dict | str):
+	"""Change the everyday settings. Secrets and activation stay in Desk."""
+	desk = SettingsDesk()
+	desk.update(frappe.parse_json(changes))
+	return ok(desk.read())

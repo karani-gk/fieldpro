@@ -38,6 +38,8 @@ function fromQuery(query) {
 		technician: query.technician || "",
 		priority: query.priority || "",
 		q: query.q || "",
+		// Set by a customer's "Jobs" button on the Customers screen.
+		customer: query.customer || "",
 	};
 }
 
@@ -122,6 +124,12 @@ onMounted(async () => {
 				<option value="">Any priority</option>
 				<option v-for="p in PRIORITIES" :key="p">{{ p }}</option>
 			</select>
+			<span v-if="filters.customer" class="chip">
+				Customer: {{ filters.customer }}
+				<button class="chip-x" aria-label="Show every customer" @click="filters.customer = ''">
+					<AppIcon name="x" :size="12" />
+				</button>
+			</span>
 			<button
 				v-if="Object.values(filters).some(Boolean)"
 				class="btn btn-ghost btn-sm"
@@ -217,6 +225,34 @@ onMounted(async () => {
 
 .search .input {
 	padding-left: 32px;
+}
+
+.chip {
+	display: inline-flex;
+	align-items: center;
+	gap: 4px;
+	padding: 4px 6px 4px 10px;
+	border-radius: 999px;
+	background: var(--mint-soft);
+	color: var(--brand-dark);
+	font-size: 13px;
+	font-weight: 550;
+}
+
+.chip-x {
+	display: grid;
+	place-items: center;
+	width: 18px;
+	height: 18px;
+	border: 0;
+	border-radius: 50%;
+	background: none;
+	color: inherit;
+	cursor: pointer;
+}
+
+.chip-x:hover {
+	background: var(--brand-soft);
 }
 
 .table-wrap {

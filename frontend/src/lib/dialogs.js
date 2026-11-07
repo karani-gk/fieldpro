@@ -2,8 +2,11 @@
 // Jobs page and the /manage/jobs/new URL (where Desk's "new Service Job" is redirected).
 import { reactive } from "vue";
 
-export const dialogs = reactive({ newJob: false });
+// `customer` ({id, name}) is filled in when booking from a customer's row.
+export const dialogs = reactive({ newJob: false, customer: null });
 
-export function openNewJob() {
+export function openNewJob(customer = null) {
+	// A click handler passes its event; only a customer ({id, name}) is kept.
+	dialogs.customer = customer?.id ? customer : null;
 	dialogs.newJob = true;
 }

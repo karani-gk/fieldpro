@@ -2,6 +2,7 @@
 // Book a job for a customer who called in. Choosing a technician now assigns it straight away;
 // leaving it empty puts the job in "Needs a technician" on the dashboard.
 import { onMounted, ref, watch } from "vue";
+import { dialogs } from "../lib/dialogs.js";
 import { isoDay } from "../lib/format.js";
 import { api } from "../lib/server.js";
 import { notify } from "../lib/toast.js";
@@ -73,6 +74,8 @@ async function submit() {
 
 onMounted(async () => {
 	findCustomers("");
+	// Booked from a customer's row: that customer is already chosen.
+	if (dialogs.customer) pickCustomer(dialogs.customer);
 	try {
 		technicians.value = (await api.get("manage.technicians")).data;
 	} catch (exc) {
