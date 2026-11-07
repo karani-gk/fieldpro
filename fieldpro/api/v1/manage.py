@@ -127,6 +127,38 @@ def customer_directory(q: str | None = None):
 
 
 @api(methods=["GET"])
+def customer_form():
+	"""May this manager add customers, and the choices for the New customer dialog."""
+	return ok(CustomerDirectory().form())
+
+
+@api(methods=["POST"])
+def add_customer(
+	customer_name: str,
+	customer_type: str = "Company",
+	customer_group: str | None = None,
+	territory: str | None = None,
+	mobile_no: str | None = None,
+	email: str | None = None,
+	address_line1: str | None = None,
+	city: str | None = None,
+):
+	"""Add a customer (needs ERPNext's create permission on Customer). Returns its list row."""
+	return ok(
+		CustomerDirectory().add(
+			customer_name=customer_name,
+			customer_type=customer_type,
+			customer_group=customer_group,
+			territory=territory,
+			mobile_no=mobile_no,
+			email=email,
+			address_line1=address_line1,
+			city=city,
+		)
+	)
+
+
+@api(methods=["GET"])
 def invoices(
 	status: str | None = None,
 	customer: str | None = None,

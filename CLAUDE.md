@@ -130,3 +130,8 @@ endpoints stay thin, rules live in `fieldpro/services/`, and comments explain wh
   due_date, and resets due_date from the payment schedule. `InvoiceDesk.submit(due_date=...)`
   sets it and empties `payment_schedule` so ERPNext rebuilds it; the Submit dialog offers a due
   date no earlier than `posts_on` (shapes.posts_on). (2026-11-07)
+- New customer dialog (2026-11-07): `CustomerDirectory.add` respects ERPNext's create permission
+  on Customer (Sales User; plain Field Manager gets no button). ERPNext's own
+  create_primary_contact/create_primary_address make the Contact and Address from mobile_no,
+  email_id, address_line1 + city (+ the company's country, which make_address needs). A name
+  that already exists is refused rather than letting ERPNext save "Name - 1".

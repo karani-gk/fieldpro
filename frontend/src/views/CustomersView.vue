@@ -1,8 +1,9 @@
 <script setup>
 // The customers a manager books for: how to reach them, their open jobs and, for managers who may
 // read invoices, what they owe. Each row books a job, or opens their jobs or invoices.
-import { ref, watch } from "vue";
+import { onMounted, ref, watch } from "vue";
 import AppIcon from "../components/AppIcon.vue";
+import NewCustomerDialog from "../components/NewCustomerDialog.vue";
 import { openNewJob } from "../lib/dialogs.js";
 import { money } from "../lib/format.js";
 import { api } from "../lib/server.js";
@@ -20,6 +21,24 @@ watch(search, () => {
 	timer = setTimeout(reload, 250);
 });
 
+// The New customer dialog's choices, and whether this manager may add customers at all
+// (ERPNext's create permission on Customer): without it, the button is not shown.
+const customerForm = ref(null);
+const adding = ref(false);
+onMounted(async () => {
+	try {
+		customerForm.value = (await api.get("manage.customer_form")).data;
+	} catch (exc) {
+		console.error("fieldpro: new customer choices", exc);
+	}
+});
+
+function onCreated({ customer, book }) {
+	adding.value = false;
+	search.value = customer.name;
+	if (book) openNewJob(customer);
+}
+
 // `owed` is null for managers without an accounts role: the column is left out for them.
 const showOwed = (rows) => (rows || []).some((c) => c.owed !== null);
 </script>
@@ -31,9 +50,9 @@ const showOwed = (rows) => (rows || []).some((c) => c.owed !== null);
 				<h1>Customers</h1>
 				<p>Who you work for, their open jobs and what they owe.</p>
 			</div>
-			<a href="/app/customer/new" class="btn" title="Customers are added in Desk">
-				<AppIcon name="external" :size="16" /> Add in Desk
-			</a>
+			<button v-if="customerForm?.can_add" class="btn btn-primary" @click="adding = true">
+				<AppIcon name="plus" :size="16" /> New customer
+			</button>
 		</div>
 
 		<div class="card toolbar">
@@ -108,6 +127,12 @@ const showOwed = (rows) => (rows || []).some((c) => c.owed !== null);
 				</tbody>
 			</table>
 		</div>
+		<NewCustomerDialog
+			v-if="adding && customerForm"
+			:choices="customerForm"
+			@close="adding = false"
+			@created="onCreated"
+		/>
 		<p v-if="data?.length === 50" class="faint more">Showing the first 50. Search to find others.</p>
 	</div>
 </template>

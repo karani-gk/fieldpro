@@ -21,6 +21,8 @@ class ManagerToolsTestCase(FieldproTestCase):
 		super().setUpClass()
 		# The demo manager's roles: a field manager who also does the accounts.
 		cls.accounts_manager = factories.user(["Field Manager", "Accounts User"], website=False)
+		# A field manager who may also add customers (ERPNext gives that to Sales User).
+		cls.sales_manager = factories.user(["Field Manager", "Sales User"], website=False)
 
 	def as_accounts(self, fn):
 		return factories.as_user(self.accounts_manager, fn)
@@ -218,6 +220,48 @@ class TestCustomerDirectory(ManagerToolsTestCase):
 
 		accounts = self.as_accounts(lambda: CustomerDirectory().search(name))
 		self.assertIsNotNone(accounts[0]["owed"])
+
+	def as_sales(self, fn):
+		return factories.as_user(self.sales_manager, fn)
+
+	def test_a_manager_with_a_sales_role_adds_a_customer_with_contact_and_address(self):
+		name = f"New Clinic {factories.suffix()}"
+		row = self.as_sales(
+			lambda: CustomerDirectory().add(
+				customer_name=name,
+				customer_type="Company",
+				mobile_no="+254711000111",
+				email="desk@newclinic.test",
+				address_line1="Ngong Road 12",
+				city="Nairobi",
+			)
+		)
+		doc = frappe.get_doc("Customer", row["id"])
+		self.assertEqual((row["name"], doc.customer_type), (name, "Company"))
+		self.assertEqual((doc.mobile_no, doc.email_id), ("+254711000111", "desk@newclinic.test"))
+		self.assertTrue(doc.customer_primary_contact)
+		self.assertTrue(doc.customer_primary_address)
+		self.assertTrue(doc.customer_group and doc.territory)
+
+	def test_adding_needs_a_sales_role(self):
+		form = factories.as_user(self.manager, lambda: CustomerDirectory().form())
+		self.assertFalse(form["can_add"])
+		with self.assertRaises(Forbidden):
+			factories.as_user(self.manager, lambda: CustomerDirectory().add(customer_name="Nope Ltd"))
+		self.assertTrue(self.as_sales(lambda: CustomerDirectory().form())["can_add"])
+
+	def test_bad_new_customers_are_refused_field_by_field(self):
+		existing = frappe.db.get_value("Customer", self.cust_x, "customer_name")
+		for fields, field in (
+			({"customer_name": " "}, "customer_name"),
+			({"customer_name": existing}, "customer_name"),
+			({"customer_name": f"X {factories.suffix()}", "email": "not-an-email"}, "email"),
+			({"customer_name": f"X {factories.suffix()}", "customer_type": "Alien"}, "customer_type"),
+			({"customer_name": f"X {factories.suffix()}", "address_line1": "Road 1"}, "city"),
+		):
+			with self.assertRaises(Invalid, msg=str(fields)) as caught:
+				self.as_sales(lambda: CustomerDirectory().add(**fields))
+			self.assertIn(field, caught.exception.fields)
 
 	def test_the_job_list_filters_by_customer(self):
 		mine = factories.job(self.cust_x)

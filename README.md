@@ -53,7 +53,7 @@ It is also the code you build, lesson by lesson, in UPEO Academy's course
   partner systems, with retries.
 - **A manager's app in Vue.js (`/manage`):** a dashboard, a drag-and-drop job board, a job list
   and job screen (assign, approve, send back, cancel, edit), technician workload, booking by
-  phone, customers (open jobs, what they owe, book from the row), invoices (draft, submit, PDF,
+  phone, customers (add one, open jobs, what they owe, book from the row), invoices (draft, submit, PDF,
   and finished jobs still waiting for one) and the everyday settings. It uses the Desk session
   and the same rules as Desk.
 - **Documents and reports:** a Job Card PDF print format and a Technician Performance report.
