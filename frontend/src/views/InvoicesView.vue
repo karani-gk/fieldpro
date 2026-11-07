@@ -6,6 +6,7 @@ import { onMounted, ref, watch } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import AppIcon from "../components/AppIcon.vue";
 import BaseModal from "../components/BaseModal.vue";
+import InvoiceDialog from "../components/InvoiceDialog.vue";
 import StatusBadge from "../components/StatusBadge.vue";
 import { dayLabel, money } from "../lib/format.js";
 import { INVOICE_TABS, invoiceTone } from "../lib/invoices.js";
@@ -25,6 +26,7 @@ const making = ref(""); // the job whose invoice is being made
 const submitting = ref(""); // the invoice being submitted
 const confirming = ref(null); // the draft waiting for "Submit it?"
 const confirmed = ref(null); // set when the manager said yes; acted on once the dialog has closed
+const opened = ref(""); // the invoice shown in the details dialog
 
 function fromQuery(query) {
 	return { status: query.status || "", customer: query.customer || "", q: query.q || "" };
@@ -108,6 +110,12 @@ async function submitInvoice(invoice) {
 	} finally {
 		submitting.value = "";
 	}
+}
+
+// The dialog submitted a draft: show the new status in the list and the totals.
+function onChanged(row) {
+	invoices.value = invoices.value.map((r) => (r.id === row.id ? row : r));
+	loadSummary();
 }
 
 function onConfirmClosed() {
@@ -228,7 +236,15 @@ onMounted(refresh);
 					</tr>
 				</thead>
 				<tbody>
-					<tr v-for="invoice in invoices" :key="invoice.id">
+					<tr
+						v-for="invoice in invoices"
+						:key="invoice.id"
+						class="clickable"
+						tabindex="0"
+						:title="`Open ${invoice.id}`"
+						@click="opened = invoice.id"
+						@keydown.enter.self="opened = invoice.id"
+					>
 						<td class="nowrap">
 							<strong>{{ invoice.id }}</strong>
 							<div v-if="invoice.due_date && !invoice.is_draft" class="faint small">
@@ -236,13 +252,14 @@ onMounted(refresh);
 							</div>
 						</td>
 						<td>{{ invoice.customer.name }}</td>
-						<td class="nowrap"><RouterLink :to="`/jobs/${invoice.job}`">{{ invoice.job }}</RouterLink></td>
+						<td class="nowrap"><RouterLink :to="`/jobs/${invoice.job}`" @click.stop>{{ invoice.job }}</RouterLink></td>
 						<td class="nowrap">{{ dayLabel(invoice.posting_date) }}</td>
 						<td><StatusBadge :status="invoice.status" :tone="invoiceTone(invoice.status)" /></td>
 						<td class="num">{{ money(invoice.total) }}</td>
 						<td class="num">{{ invoice.is_draft ? "" : money(invoice.outstanding) || "0" }}</td>
 						<td>
-							<div class="row-actions">
+							<!-- The row opens the invoice; its buttons do their own thing instead. -->
+							<div class="row-actions" @click.stop>
 								<button
 									v-if="invoice.is_draft"
 									class="btn btn-primary btn-sm"
@@ -273,6 +290,8 @@ onMounted(refresh);
 			</button>
 			<span v-else-if="loading" class="faint">Loading…</span>
 		</div>
+
+		<InvoiceDialog v-if="opened" :id="opened" @close="opened = ''" @changed="onChanged" />
 
 		<BaseModal v-if="confirming" :title="`Submit ${confirming.id}?`" @close="onConfirmClosed">
 			<p class="muted">
@@ -413,6 +432,15 @@ onMounted(refresh);
 	background: var(--surface);
 	color: var(--text);
 	box-shadow: var(--shadow);
+}
+
+.clickable {
+	cursor: pointer;
+}
+
+.clickable:focus-visible {
+	outline: 2px solid var(--brand);
+	outline-offset: -2px;
 }
 
 .nowrap {

@@ -144,6 +144,12 @@ def invoices(
 
 
 @api(methods=["GET"])
+def invoice(invoice: str):
+	"""One job invoice with its lines, taxes and totals."""
+	return ok(InvoiceDesk().detail(invoice))
+
+
+@api(methods=["GET"])
 def invoice_summary():
 	"""Draft, unpaid and overdue totals, and the finished jobs that have no invoice yet."""
 	return ok(InvoiceDesk().summary())

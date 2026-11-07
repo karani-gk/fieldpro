@@ -130,3 +130,32 @@ def invoice_summary(row) -> dict:
 		"pdf_url": "/api/method/frappe.utils.print_format.download_pdf?"
 		+ urlencode({"doctype": "Sales Invoice", "name": row.name}),
 	}
+
+
+def invoice_detail(doc, technician_name: str | None, issue: str | None) -> dict:
+	"""One invoice opened from the list: its summary plus every line, tax and total."""
+	currency = doc.currency
+	return {
+		**invoice_summary(doc),
+		"issue": cstr(issue),
+		"technician": {"id": doc.technician, "name": technician_name or doc.technician}
+		if doc.get("technician")
+		else None,
+		"items": [
+			{
+				"item_code": line.item_code,
+				"item_name": line.item_name,
+				"description": cstr(line.description) if line.description != line.item_name else "",
+				"qty": flt(line.qty, 2),
+				"uom": line.uom,
+				"rate": money(line.rate, currency),
+				"amount": money(line.amount, currency),
+			}
+			for line in doc.items
+		],
+		"taxes": [{"description": t.description, "amount": money(t.tax_amount, currency)} for t in doc.taxes],
+		"net_total": money(doc.net_total, currency),
+		"discount": money(doc.discount_amount, currency) if flt(doc.discount_amount) else None,
+		"grand_total": money(doc.grand_total, currency),
+		"remarks": cstr(doc.remarks),
+	}

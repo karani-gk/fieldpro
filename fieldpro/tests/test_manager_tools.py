@@ -100,6 +100,25 @@ class TestInvoiceDesk(ManagerToolsTestCase):
 		with self.assertRaises(InvalidTransition):
 			self.as_accounts(lambda: InvoiceDesk().submit(invoice))
 
+	def test_the_detail_shows_lines_totals_and_the_job(self):
+		job = self.done_job()
+		invoice = self.as_accounts(lambda: InvoiceDesk().make_for_job(job))
+		detail = self.as_accounts(lambda: InvoiceDesk().detail(invoice))
+		self.assertEqual(
+			(detail["id"], detail["job"], detail["technician"]["id"]), (invoice, job, self.tech_a)
+		)
+		codes = [line["item_code"] for line in detail["items"]]
+		self.assertIn(factories.PART, codes)
+		self.assertIn("SVC-LABOUR", codes)
+		self.assertEqual(detail["grand_total"], detail["total"])
+		self.assertIn("issue", detail)
+
+	def test_the_detail_is_only_for_job_invoices_and_accounts(self):
+		with self.assertRaises(Invalid):
+			self.as_accounts(lambda: InvoiceDesk().detail("NO-SUCH-INVOICE"))
+		with self.assertRaises(Forbidden):
+			factories.as_user(self.manager, lambda: InvoiceDesk().detail("NO-SUCH-INVOICE"))
+
 	def test_the_summary_totals_drafts(self):
 		job = self.done_job()
 		before = self.as_accounts(lambda: InvoiceDesk().summary())["draft"]["count"]

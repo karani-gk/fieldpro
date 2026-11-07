@@ -116,6 +116,15 @@ class InvoiceDesk(ManagerOnly):
 			raise InvalidTransition(_("Invoice {0} is already submitted.").format(invoice))
 		doc.submit()
 
+	def detail(self, invoice: str) -> dict:
+		"""Everything the invoice dialog shows: lines, taxes, totals, and the job it bills."""
+		doc = self._job_invoice(invoice)
+		technician = (
+			frappe.db.get_value("Technician", doc.technician, "full_name") if doc.technician else None
+		)
+		issue = frappe.db.get_value("Service Job", doc.service_job, "issue")
+		return shapes.invoice_detail(doc, technician, issue)
+
 	def row(self, invoice: str) -> dict:
 		return shapes.invoice_summary(frappe.get_doc("Sales Invoice", invoice))
 
