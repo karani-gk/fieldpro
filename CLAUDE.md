@@ -125,3 +125,8 @@ endpoints stay thin, rules live in `fieldpro/services/`, and comments explain wh
   leave the server and stay in Desk ("All settings in Desk").
 - Frappe 16 `get_list` refuses SQL functions as strings: write aggregates as
   `{"COUNT": "name", "as": "count"}`.
+- An older draft Sales Invoice fails to submit with "Due Date cannot be before Posting Date":
+  ERPNext moves posting_date to the day of submitting (no "Edit Posting Date") but keeps the old
+  due_date, and resets due_date from the payment schedule. `InvoiceDesk.submit(due_date=...)`
+  sets it and empties `payment_schedule` so ERPNext rebuilds it; the Submit dialog offers a due
+  date no earlier than `posts_on` (shapes.posts_on). (2026-11-07)

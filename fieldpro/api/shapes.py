@@ -8,7 +8,7 @@ clients; renaming or removing one is a new API version.
 
 from urllib.parse import urlencode
 
-from frappe.utils import cstr, flt, getdate
+from frappe.utils import cstr, flt, getdate, today
 
 from fieldpro.utils import to_iso
 
@@ -114,6 +114,14 @@ def manager_job(detail: dict, doc) -> dict:
 	}
 
 
+def posts_on(row) -> str:
+	"""The posting date a draft will have once submitted. ERPNext moves it to the day of submitting
+	unless "Edit Posting Date" (set_posting_time) is ticked; a submitted invoice keeps its own."""
+	if row.docstatus == 0 and not row.get("set_posting_time"):
+		return getdate(today()).isoformat()
+	return date(row.posting_date)
+
+
 def invoice_summary(row) -> dict:
 	"""A job's Sales Invoice in the manager app. `status` is ERPNext's (Draft, Unpaid, Overdue,
 	Paid...). The PDF link is Frappe's own print download, so it keeps ERPNext's permission check."""
@@ -125,6 +133,7 @@ def invoice_summary(row) -> dict:
 		"due_date": date(row.due_date),
 		"status": row.status,
 		"is_draft": row.docstatus == 0,
+		"posts_on": posts_on(row),
 		"total": money(row.grand_total, row.currency),
 		"outstanding": money(row.outstanding_amount, row.currency),
 		"pdf_url": "/api/method/frappe.utils.print_format.download_pdf?"

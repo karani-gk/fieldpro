@@ -163,9 +163,10 @@ def make_invoice(job: str):
 
 
 @api(methods=["POST"])
-def submit_invoice(invoice: str):
+def submit_invoice(invoice: str, due_date: str | None = None):
+	"""Submit a draft. due_date (optional) replaces the date it was drafted with."""
 	desk = InvoiceDesk()
-	desk.submit(invoice)
+	desk.submit(invoice, due_date=due_date)
 	return ok(desk.row(invoice))
 
 

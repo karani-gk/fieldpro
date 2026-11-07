@@ -2,6 +2,7 @@
 customer_directory.py): managers only, ERPNext's own permissions for invoices, and no secrets."""
 
 import frappe
+from frappe.utils import add_days, today
 
 from fieldpro.api.errors import Forbidden, Invalid, InvalidTransition
 from fieldpro.api.v1 import manage as endpoints
@@ -118,6 +119,37 @@ class TestInvoiceDesk(ManagerToolsTestCase):
 			self.as_accounts(lambda: InvoiceDesk().detail("NO-SUCH-INVOICE"))
 		with self.assertRaises(Forbidden):
 			factories.as_user(self.manager, lambda: InvoiceDesk().detail("NO-SUCH-INVOICE"))
+
+	def old_draft(self) -> str:
+		"""A draft made two days ago, like the demo's: it will post today but is due back then."""
+		invoice = self.as_accounts(lambda: InvoiceDesk().make_for_job(self.done_job()))
+		past = add_days(today(), -2)
+		frappe.db.set_value("Sales Invoice", invoice, {"posting_date": past, "due_date": past})
+		frappe.db.set_value("Payment Schedule", {"parent": invoice}, "due_date", past)
+		return invoice
+
+	def test_an_old_draft_needs_a_new_due_date(self):
+		invoice = self.old_draft()
+		with self.assertRaises(frappe.ValidationError):
+			self.as_accounts(lambda: InvoiceDesk().submit(invoice))
+
+	def test_submitting_with_a_due_date_posts_today_and_is_due_then(self):
+		invoice = self.old_draft()
+		due = add_days(today(), 14)
+		self.as_accounts(lambda: InvoiceDesk().submit(invoice, due_date=due))
+		doc = frappe.get_doc("Sales Invoice", invoice)
+		self.assertEqual((doc.docstatus, str(doc.posting_date), str(doc.due_date)), (1, today(), due))
+		self.assertEqual([str(r.due_date) for r in doc.payment_schedule], [due])
+
+	def test_a_due_date_before_the_posting_date_is_refused_by_us(self):
+		invoice = self.old_draft()
+		with self.assertRaises(Invalid) as caught:
+			self.as_accounts(lambda: InvoiceDesk().submit(invoice, due_date=add_days(today(), -1)))
+		self.assertIn("due_date", caught.exception.fields)
+
+	def test_a_draft_says_which_day_it_will_post(self):
+		invoice = self.old_draft()
+		self.assertEqual(self.as_accounts(lambda: InvoiceDesk().row(invoice))["posts_on"], today())
 
 	def test_the_summary_totals_drafts(self):
 		job = self.done_job()

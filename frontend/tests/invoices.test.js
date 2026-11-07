@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { invoiceTone, INVOICE_TABS } from "../src/lib/invoices.js";
+import { invoiceTone, INVOICE_TABS, suggestedDueDate } from "../src/lib/invoices.js";
 import { dialogs, openNewJob } from "../src/lib/dialogs.js";
 
 describe("invoices", () => {
@@ -11,6 +11,17 @@ describe("invoices", () => {
 
 	it("offers the tabs the server knows", () => {
 		expect(INVOICE_TABS).toEqual(["Draft", "Unpaid", "Overdue", "Paid", "Cancelled"]);
+	});
+});
+
+describe("suggestedDueDate", () => {
+	it("keeps a due date that is still valid", () => {
+		expect(suggestedDueDate({ due_date: "2026-11-20", posts_on: "2026-11-07" })).toBe("2026-11-20");
+	});
+
+	it("moves a past due date to the day the invoice posts", () => {
+		expect(suggestedDueDate({ due_date: "2026-11-04", posts_on: "2026-11-07" })).toBe("2026-11-07");
+		expect(suggestedDueDate({ due_date: null, posts_on: "2026-11-07" })).toBe("2026-11-07");
 	});
 });
 

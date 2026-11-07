@@ -1,23 +1,21 @@
 <script setup>
 // One invoice, opened from the Invoices list: who it bills, for which job, every line and total.
-// A draft can be submitted from here; "Submit" asks once more in the footer (it posts the ledger
-// and takes the parts out of the van), so no second dialog opens on top of this one.
+// "Submit" on a draft closes this dialog and asks the list to open the Submit dialog (due date,
+// confirmation) in its place, so two dialogs never stack.
 import { ref } from "vue";
 import { dayLabel, money } from "../lib/format.js";
 import { invoiceTone } from "../lib/invoices.js";
 import { api } from "../lib/server.js";
-import { notify } from "../lib/toast.js";
 import AppIcon from "./AppIcon.vue";
 import BaseModal from "./BaseModal.vue";
 import StatusBadge from "./StatusBadge.vue";
 
 const props = defineProps({ id: { type: String, required: true } });
-const emit = defineEmits(["close", "changed"]);
+const emit = defineEmits(["close", "submit"]);
 
 const invoice = ref(null);
 const error = ref(null);
-const confirming = ref(false);
-const submitting = ref(false);
+const submitRequested = ref(false);
 const modal = ref(null);
 
 async function load() {
@@ -29,24 +27,14 @@ async function load() {
 }
 load();
 
-async function submit() {
-	submitting.value = true;
-	try {
-		const { data } = await api.post("manage.submit_invoice", { invoice: props.id });
-		notify(`${data.id} submitted`);
-		emit("changed", data);
-		confirming.value = false;
-		await load();
-	} catch (exc) {
-		notify(exc.message, "error");
-	} finally {
-		submitting.value = false;
-	}
+function requestSubmit() {
+	submitRequested.value = true;
+	modal.value.close();
 }
 </script>
 
 <template>
-	<BaseModal ref="modal" :title="id" wide @close="emit('close')">
+	<BaseModal ref="modal" :title="id" wide @close="submitRequested ? emit('submit', invoice) : emit('close')">
 		<div v-if="error" class="error-banner">{{ error.message }}</div>
 		<p v-else-if="!invoice" class="faint">Loading…</p>
 
@@ -134,23 +122,14 @@ async function submit() {
 		</div>
 
 		<template #footer="{ close }">
-			<template v-if="confirming">
-				<span class="warn">Submitting posts it to the accounts and takes the parts out of the van.</span>
-				<button class="btn" :disabled="submitting" @click="confirming = false">Not yet</button>
-				<button class="btn btn-primary" :disabled="submitting" @click="submit">
-					{{ submitting ? "Submitting…" : "Submit invoice" }}
-				</button>
-			</template>
-			<template v-else>
-				<a :href="`/app/sales-invoice/${id}`" class="btn btn-ghost" title="Open in Desk">
-					<AppIcon name="external" :size="15" /> Desk
-				</a>
-				<a v-if="invoice" :href="invoice.pdf_url" class="btn" target="_blank">
-					<AppIcon name="download" :size="15" /> PDF
-				</a>
-				<button class="btn" @click="close">Close</button>
-				<button v-if="invoice?.is_draft" class="btn btn-primary" @click="confirming = true">Submit</button>
-			</template>
+			<a :href="`/app/sales-invoice/${id}`" class="btn btn-ghost" title="Open in Desk">
+				<AppIcon name="external" :size="15" /> Desk
+			</a>
+			<a v-if="invoice" :href="invoice.pdf_url" class="btn" target="_blank">
+				<AppIcon name="download" :size="15" /> PDF
+			</a>
+			<button class="btn" @click="close">Close</button>
+			<button v-if="invoice?.is_draft" class="btn btn-primary" @click="requestSubmit">Submit</button>
 		</template>
 	</BaseModal>
 </template>
@@ -242,11 +221,5 @@ async function submit() {
 .remarks {
 	margin: 16px 0 0;
 	font-size: 13px;
-}
-
-.warn {
-	margin-right: auto;
-	font-size: 13px;
-	color: var(--amber-fg);
 }
 </style>

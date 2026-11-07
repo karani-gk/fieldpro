@@ -18,3 +18,10 @@ const INVOICE_TONES = {
 export function invoiceTone(status) {
 	return INVOICE_TONES[status] || "gray";
 }
+
+/** The due date to offer when submitting: the draft's own, unless it is before the day the
+ * invoice will post (`posts_on`, from the server), which ERPNext refuses. Dates are YYYY-MM-DD. */
+export function suggestedDueDate(invoice) {
+	if (invoice.due_date && invoice.due_date >= invoice.posts_on) return invoice.due_date;
+	return invoice.posts_on;
+}

@@ -5,8 +5,8 @@
 import { onMounted, ref, watch } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import AppIcon from "../components/AppIcon.vue";
-import BaseModal from "../components/BaseModal.vue";
 import InvoiceDialog from "../components/InvoiceDialog.vue";
+import SubmitInvoiceDialog from "../components/SubmitInvoiceDialog.vue";
 import StatusBadge from "../components/StatusBadge.vue";
 import { dayLabel, money } from "../lib/format.js";
 import { INVOICE_TABS, invoiceTone } from "../lib/invoices.js";
@@ -23,9 +23,7 @@ const loading = ref(false);
 const error = ref(null);
 const summary = ref(null);
 const making = ref(""); // the job whose invoice is being made
-const submitting = ref(""); // the invoice being submitted
-const confirming = ref(null); // the draft waiting for "Submit it?"
-const confirmed = ref(null); // set when the manager said yes; acted on once the dialog has closed
+const submitting = ref(null); // the draft in the Submit dialog
 const opened = ref(""); // the invoice shown in the details dialog
 
 function fromQuery(query) {
@@ -98,31 +96,17 @@ async function makeInvoice(job) {
 	}
 }
 
-async function submitInvoice(invoice) {
-	submitting.value = invoice.id;
-	try {
-		const { data } = await api.post("manage.submit_invoice", { invoice: invoice.id });
-		invoices.value = invoices.value.map((row) => (row.id === data.id ? data : row));
-		notify(`${data.id} submitted`);
-		loadSummary();
-	} catch (exc) {
-		notify(exc.message, "error");
-	} finally {
-		submitting.value = "";
-	}
-}
-
-// The dialog submitted a draft: show the new status in the list and the totals.
-function onChanged(row) {
+// A draft was submitted (from its row or its details): show the new status and the totals.
+function onSubmitted(row) {
+	submitting.value = null;
 	invoices.value = invoices.value.map((r) => (r.id === row.id ? row : r));
 	loadSummary();
 }
 
-function onConfirmClosed() {
-	const invoice = confirmed.value;
-	confirming.value = null;
-	confirmed.value = null;
-	if (invoice) submitInvoice(invoice);
+// "Submit" in the details dialog: that dialog has closed, the Submit dialog opens in its place.
+function submitFromDetails(invoice) {
+	opened.value = "";
+	submitting.value = invoice;
 }
 
 function refresh() {
@@ -263,10 +247,9 @@ onMounted(refresh);
 								<button
 									v-if="invoice.is_draft"
 									class="btn btn-primary btn-sm"
-									:disabled="submitting === invoice.id"
-									@click="confirming = invoice"
+									@click="submitting = invoice"
 								>
-									{{ submitting === invoice.id ? "Submitting…" : "Submit" }}
+									Submit
 								</button>
 								<a :href="invoice.pdf_url" class="btn btn-sm" title="Download PDF" target="_blank">
 									<AppIcon name="download" :size="15" /> PDF
@@ -291,18 +274,14 @@ onMounted(refresh);
 			<span v-else-if="loading" class="faint">Loading…</span>
 		</div>
 
-		<InvoiceDialog v-if="opened" :id="opened" @close="opened = ''" @changed="onChanged" />
+		<InvoiceDialog v-if="opened" :id="opened" @close="opened = ''" @submit="submitFromDetails" />
 
-		<BaseModal v-if="confirming" :title="`Submit ${confirming.id}?`" @close="onConfirmClosed">
-			<p class="muted">
-				{{ money(confirming.total) }} to {{ confirming.customer.name }}. Submitting posts it to the accounts and
-				takes the parts out of the technician's van. To change it afterwards, accounts must cancel it in Desk.
-			</p>
-			<template #footer="{ close }">
-				<button class="btn" @click="close">Not yet</button>
-				<button class="btn btn-primary" @click="confirmed = confirming; close()">Submit invoice</button>
-			</template>
-		</BaseModal>
+		<SubmitInvoiceDialog
+			v-if="submitting"
+			:invoice="submitting"
+			@close="submitting = null"
+			@submitted="onSubmitted"
+		/>
 	</div>
 </template>
 

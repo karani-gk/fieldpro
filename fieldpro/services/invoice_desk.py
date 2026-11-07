@@ -9,7 +9,7 @@ a draft made from this screen is the draft the job would have got.
 
 import frappe
 from frappe import _
-from frappe.utils import flt
+from frappe.utils import flt, formatdate, getdate
 
 from fieldpro.access import AccessProfile
 from fieldpro.api import shapes
@@ -33,6 +33,7 @@ INVOICE_FIELDS = [
 	"grand_total",
 	"outstanding_amount",
 	"currency",
+	"set_posting_time",
 ]
 # The screen's status tabs, each as Sales Invoice filters. ERPNext keeps `status` current (it
 # turns Unpaid into Overdue overnight), so the tabs read it rather than recomputing it.
@@ -109,11 +110,17 @@ class InvoiceDesk(ManagerOnly):
 			)
 		return self.invoicing.create_for_job(job)
 
-	def submit(self, invoice: str) -> None:
-		"""Submit a draft. ERPNext checks the submit permission and posts the stock and ledger."""
+	def submit(self, invoice: str, due_date: str | None = None) -> None:
+		"""Submit a draft. ERPNext checks the submit permission and posts the stock and ledger.
+
+		A draft posts on the day it is submitted (unless "Edit Posting Date" is ticked), but keeps
+		the due date it was drafted with, so a draft from last week fails ERPNext's "Due Date
+		cannot be before Posting Date". With `due_date`, the manager's date replaces it."""
 		doc = self._job_invoice(invoice)
 		if doc.docstatus != 0:
 			raise InvalidTransition(_("Invoice {0} is already submitted.").format(invoice))
+		if due_date:
+			self._set_due_date(doc, due_date)
 		doc.submit()
 
 	def detail(self, invoice: str) -> dict:
@@ -127,6 +134,27 @@ class InvoiceDesk(ManagerOnly):
 
 	def row(self, invoice: str) -> dict:
 		return shapes.invoice_summary(frappe.get_doc("Sales Invoice", invoice))
+
+	@staticmethod
+	def _set_due_date(doc, value: str) -> None:
+		try:
+			due = getdate(value)
+		except Exception:
+			raise Invalid(_("That is not a date."), fields={"due_date": "invalid"})
+		posts_on = getdate(shapes.posts_on(doc))
+		if due < posts_on:
+			raise Invalid(
+				_("The due date cannot be before {0}, the day the invoice posts.").format(
+					formatdate(posts_on)
+				),
+				fields={"due_date": "before posting date"},
+			)
+		doc.due_date = due
+		# ERPNext sets due_date from the payment schedule (set_due_date), so the old rows would put
+		# the old date back. Emptied, the schedule is rebuilt on validate: from the payment terms
+		# template if the customer has one (counted from the posting date), else as one row due
+		# on the date chosen here.
+		doc.payment_schedule = []
 
 	def _job_invoice(self, invoice: str):
 		"""A Sales Invoice made from a job: other invoices belong to Desk, not this app."""
